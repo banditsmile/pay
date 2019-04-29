@@ -61,22 +61,22 @@ class Jdpay implements GatewayApplicationInterface
      * Const url.
      */
     const URL = [
-        self::MODE_NORMAL  => 'https://api.mch.weixin.qq.com/',
+        self::MODE_NORMAL  => 'https://paygate.jd.com/',
         self::MODE_DEV     => 'https://api.mch.weixin.qq.com/sandboxnew/',
         self::MODE_HK      => 'https://apihk.mch.weixin.qq.com/',
-        self::MODE_SERVICE => 'https://api.mch.weixin.qq.com/',
+        self::MODE_SERVICE => 'https://paygate.jd.com/',
         self::MODE_US      => 'https://apius.mch.weixin.qq.com/',
     ];
 
     /**
-     * Wechat payload.
+     * Jdpay payload.
      *
      * @var array
      */
     protected $payload;
 
     /**
-     * Wechat gateway.
+     * Jdpay gateway.
      *
      * @var string
      */
@@ -143,7 +143,7 @@ class Jdpay implements GatewayApplicationInterface
      */
     public function pay($gateway, $params = [])
     {
-        Events::dispatch(Events::PAY_STARTING, new Events\PayStarting('Wechat', $gateway, $params));
+        Events::dispatch(Events::PAY_STARTING, new Events\PayStarting('Jdpay', $gateway, $params));
 
         $this->payload = array_merge($this->payload, $params);
 
@@ -173,7 +173,7 @@ class Jdpay implements GatewayApplicationInterface
     {
         $content = $content ?? Request::createFromGlobals()->getContent();
 
-        Events::dispatch(Events::REQUEST_RECEIVED, new Events\RequestReceived('Wechat', '', [$content]));
+        Events::dispatch(Events::REQUEST_RECEIVED, new Events\RequestReceived('Jdpay', '', [$content]));
 
         $data = Support::fromXml($content);
         if ($refund) {
@@ -181,15 +181,15 @@ class Jdpay implements GatewayApplicationInterface
             $data = array_merge(Support::fromXml($decrypt_data), $data);
         }
 
-        Log::debug('Resolved The Received Wechat Request Data', $data);
+        Log::debug('Resolved The Received Jdpay Request Data', $data);
 
         if ($refund || Support::generateSign($data) === $data['sign']) {
             return new Collection($data);
         }
 
-        Events::dispatch(Events::SIGN_FAILED, new Events\SignFailed('Wechat', '', $data));
+        Events::dispatch(Events::SIGN_FAILED, new Events\SignFailed('Jdpay', '', $data));
 
-        throw new InvalidSignException('Wechat Sign Verify FAILED', $data);
+        throw new InvalidSignException('Jdpay Sign Verify FAILED', $data);
     }
 
     /**
@@ -214,7 +214,7 @@ class Jdpay implements GatewayApplicationInterface
 
         $this->payload = Support::filterPayload($this->payload, $order);
 
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Wechat', 'Find', $this->gateway, $this->payload));
+        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Jdpay', 'Find', $this->gateway, $this->payload));
 
         return Support::requestApi(
             $refund ? 'pay/refundquery' : 'pay/orderquery',
@@ -239,7 +239,7 @@ class Jdpay implements GatewayApplicationInterface
     {
         $this->payload = Support::filterPayload($this->payload, $order, true);
 
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Wechat', 'Refund', $this->gateway, $this->payload));
+        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Jdpay', 'Refund', $this->gateway, $this->payload));
 
         return Support::requestApi(
             'secapi/pay/refund',
@@ -267,7 +267,7 @@ class Jdpay implements GatewayApplicationInterface
 
         $this->payload = Support::filterPayload($this->payload, $order, true);
 
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Wechat', 'Cancel', $this->gateway, $this->payload));
+        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Jdpay', 'Cancel', $this->gateway, $this->payload));
 
         return Support::requestApi(
             'secapi/pay/reverse',
@@ -295,7 +295,7 @@ class Jdpay implements GatewayApplicationInterface
 
         $this->payload = Support::filterPayload($this->payload, $order);
 
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Wechat', 'Close', $this->gateway, $this->payload));
+        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Jdpay', 'Close', $this->gateway, $this->payload));
 
         return Support::requestApi('pay/closeorder', $this->payload);
     }
@@ -311,7 +311,7 @@ class Jdpay implements GatewayApplicationInterface
      */
     public function success(): Response
     {
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Wechat', 'Success', $this->gateway));
+        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Jdpay', 'Success', $this->gateway));
 
         return Response::create(
             Support::toXml(['return_code' => 'SUCCESS', 'return_msg' => 'OK']),
@@ -338,7 +338,7 @@ class Jdpay implements GatewayApplicationInterface
 
         $this->payload = Support::filterPayload($this->payload, $params, true);
 
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Wechat', 'Download', $this->gateway, $this->payload));
+        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Jdpay', 'Download', $this->gateway, $this->payload));
 
         $result = Support::getInstance()->post(
             'pay/downloadbill',
@@ -346,7 +346,7 @@ class Jdpay implements GatewayApplicationInterface
         );
 
         if (is_array($result)) {
-            throw new GatewayException('Get Wechat API Error: '.$result['return_msg'], $result);
+            throw new GatewayException('Get Jdpay API Error: '.$result['return_msg'], $result);
         }
 
         return $result;

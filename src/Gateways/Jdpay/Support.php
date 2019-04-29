@@ -39,7 +39,7 @@ class Support
     use HasHttpRequest;
 
     /**
-     * Wechat gateway.
+     * Jdpay gateway.
      *
      * @var string
      */
@@ -143,7 +143,7 @@ class Support
     }
 
     /**
-     * Request wechat api.
+     * Request Jdpay api.
      *
      * @author bandit <banditsmile@qq.com>
      *
@@ -159,7 +159,7 @@ class Support
      */
     public static function requestApi($endpoint, $data, $cert = false): Collection
     {
-        Events::dispatch(Events::API_REQUESTING, new Events\ApiRequesting('Wechat', '', self::$instance->getBaseUri().$endpoint, $data));
+        Events::dispatch(Events::API_REQUESTING, new Events\ApiRequesting('Jdpay', '', self::$instance->getBaseUri().$endpoint, $data));
 
         $result = self::$instance->post(
             $endpoint,
@@ -171,7 +171,7 @@ class Support
         );
         $result = is_array($result) ? $result : self::fromXml($result);
 
-        Events::dispatch(Events::API_REQUESTED, new Events\ApiRequested('Wechat', '', self::$instance->getBaseUri().$endpoint, $result));
+        Events::dispatch(Events::API_REQUESTED, new Events\ApiRequested('Jdpay', '', self::$instance->getBaseUri().$endpoint, $result));
 
         return self::processingApiResult($endpoint, $result);
     }
@@ -214,7 +214,7 @@ class Support
     }
 
     /**
-     * Generate wechat sign.
+     * Generate Jdpay sign.
      *
      * @author bandit <banditsmile@qq.com>
      *
@@ -229,14 +229,14 @@ class Support
         $key = self::$instance->key;
 
         if (is_null($key)) {
-            throw new InvalidArgumentException('Missing Wechat Config -- [key]');
+            throw new InvalidArgumentException('Missing Jdpay Config -- [key]');
         }
 
         ksort($data);
 
         $string = md5(self::getSignContent($data).'&key='.$key);
 
-        Log::debug('Wechat Generate Sign Before UPPER', [$data, $string]);
+        Log::debug('Jdpay Generate Sign Before UPPER', [$data, $string]);
 
         return strtoupper($string);
     }
@@ -258,7 +258,7 @@ class Support
             $buff .= ($k != 'sign' && $v != '' && !is_array($v)) ? $k.'='.$v.'&' : '';
         }
 
-        Log::debug('Wechat Generate Sign Content Before Trim', [$data, $buff]);
+        Log::debug('Jdpay Generate Sign Content Before Trim', [$data, $buff]);
 
         return trim($buff, '&');
     }
@@ -409,14 +409,14 @@ class Support
     {
         if (!isset($result['return_code']) || $result['return_code'] != 'SUCCESS') {
             throw new GatewayException(
-                'Get Wechat API Error:'.($result['return_msg'] ?? $result['retmsg'] ?? ''),
+                'Get Jdpay API Error:'.($result['return_msg'] ?? $result['retmsg'] ?? ''),
                 $result
             );
         }
 
         if (isset($result['result_code']) && $result['result_code'] != 'SUCCESS') {
             throw new BusinessException(
-                'Wechat Business Error: '.$result['err_code'].' - '.$result['err_code_des'],
+                'Jdpay Business Error: '.$result['err_code'].' - '.$result['err_code_des'],
                 $result
             );
         }
@@ -427,9 +427,9 @@ class Support
             return new Collection($result);
         }
 
-        Events::dispatch(Events::SIGN_FAILED, new Events\SignFailed('Wechat', '', $result));
+        Events::dispatch(Events::SIGN_FAILED, new Events\SignFailed('Jdpay', '', $result));
 
-        throw new InvalidSignException('Wechat Sign Verify FAILED', $result);
+        throw new InvalidSignException('Jdpay Sign Verify FAILED', $result);
     }
 
     /**
