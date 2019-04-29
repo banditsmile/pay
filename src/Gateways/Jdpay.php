@@ -1,6 +1,6 @@
 <?php
 
-namespace Yansongda\Pay\Gateways;
+namespace Bandit\Pay\Gateways;
 
 use Exception;
 use Symfony\Component\HttpFoundation\RedirectResponse;

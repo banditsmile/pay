@@ -1,6 +1,6 @@
 <?php
 
-namespace Yansongda\Pay\Gateways;
+namespace Bandit\Pay\Gateways;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
