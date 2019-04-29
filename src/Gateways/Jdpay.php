@@ -43,29 +43,11 @@ class Jdpay implements GatewayApplicationInterface
     const MODE_DEV = 'dev';
 
     /**
-     * 香港钱包 API.
-     */
-    const MODE_HK = 'hk';
-
-    /**
-     * 境外 API.
-     */
-    const MODE_US = 'us';
-
-    /**
-     * 服务商模式.
-     */
-    const MODE_SERVICE = 'service';
-
-    /**
      * Const url.
      */
     const URL = [
         self::MODE_NORMAL  => 'https://paygate.jd.com/',
-        self::MODE_DEV     => 'https://api.mch.weixin.qq.com/sandboxnew/',
-        self::MODE_HK      => 'https://apihk.mch.weixin.qq.com/',
-        self::MODE_SERVICE => 'https://paygate.jd.com/',
-        self::MODE_US      => 'https://apius.mch.weixin.qq.com/',
+        self::MODE_DEV     => 'https://paygate.jd.com/sandboxnew/',
     ];
 
     /**
