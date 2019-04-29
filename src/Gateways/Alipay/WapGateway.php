@@ -7,7 +7,7 @@ class WapGateway extends WebGateway
     /**
      * Get method config.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @return string
      */
@@ -19,7 +19,7 @@ class WapGateway extends WebGateway
     /**
      * Get productCode config.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @return string
      */

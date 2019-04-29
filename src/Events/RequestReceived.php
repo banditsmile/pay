@@ -14,7 +14,7 @@ class RequestReceived extends Event
     /**
      * Bootstrap.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string $driver
      * @param string $gateway

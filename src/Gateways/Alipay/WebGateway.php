@@ -13,7 +13,7 @@ class WebGateway implements GatewayInterface
     /**
      * Pay an order.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string $endpoint
      * @param array  $payload
@@ -43,7 +43,7 @@ class WebGateway implements GatewayInterface
     /**
      * Find.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param $order
      *
@@ -60,7 +60,7 @@ class WebGateway implements GatewayInterface
     /**
      * Build Html response.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string $endpoint
      * @param array  $payload
@@ -88,7 +88,7 @@ class WebGateway implements GatewayInterface
     /**
      * Get method config.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @return string
      */
@@ -100,7 +100,7 @@ class WebGateway implements GatewayInterface
     /**
      * Get productCode config.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @return string
      */

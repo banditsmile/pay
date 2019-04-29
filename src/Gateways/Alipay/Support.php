@@ -15,7 +15,7 @@ use Yansongda\Supports\Str;
 use Yansongda\Supports\Traits\HasHttpRequest;
 
 /**
- * @author yansongda <me@yansongda.cn>
+ * @author bandit <banditsmile@qq.com>
  *
  * @property string app_id alipay app_id
  * @property string ali_public_key
@@ -52,7 +52,7 @@ class Support
     /**
      * Bootstrap.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param Config $config
      */
@@ -67,7 +67,7 @@ class Support
     /**
      * __get.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param $key
      *
@@ -81,7 +81,7 @@ class Support
     /**
      * create.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param Config $config
      *
@@ -99,7 +99,7 @@ class Support
     /**
      * clear.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @return void
      */
@@ -111,7 +111,7 @@ class Support
     /**
      * Get Alipay API result.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param array $data
      *
@@ -141,7 +141,7 @@ class Support
     /**
      * Generate sign.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param array $params
      *
@@ -214,7 +214,7 @@ class Support
     /**
      * Get signContent that is to be signed.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param array $data
      * @param bool  $verify
@@ -261,7 +261,7 @@ class Support
     /**
      * Get service config.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param null|string $key
      * @param null|mixed  $default
@@ -284,7 +284,7 @@ class Support
     /**
      * Get Base Uri.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @return string
      */
@@ -296,7 +296,7 @@ class Support
     /**
      * processingApiResult.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param $data
      * @param $result
@@ -331,7 +331,7 @@ class Support
     /**
      * Set Http options.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @return self
      */

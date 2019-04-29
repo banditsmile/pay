@@ -20,7 +20,7 @@ class Log
     /**
      * Forward call.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string $method
      * @param array  $args
@@ -35,7 +35,7 @@ class Log
     /**
      * Forward call.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string $method
      * @param array  $args

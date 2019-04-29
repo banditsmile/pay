@@ -28,7 +28,7 @@ class Exception extends \Exception
     /**
      * Bootstrap.
      *
-     * @author yansongda <me@yansonga.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string       $message
      * @param array|string $raw

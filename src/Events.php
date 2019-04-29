@@ -8,7 +8,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * @author yansongda <me@yansongda.cn>
+ * @author bandit <banditsmile@qq.com>
  *
  * @method static Event dispatch($eventName, Event $event = null) Dispatches an event to all registered listeners
  * @method static array getListeners($eventName = null) Gets the listeners of a specific event or all listeners sorted by descending priority.
@@ -80,7 +80,7 @@ class Events
     /**
      * Forward call.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string $method
      * @param array  $args
@@ -97,7 +97,7 @@ class Events
     /**
      * Forward call.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string $method
      * @param array  $args
@@ -114,7 +114,7 @@ class Events
     /**
      * setDispatcher.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param EventDispatcher $dispatcher
      *
@@ -128,7 +128,7 @@ class Events
     /**
      * getDispatcher.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @return EventDispatcher
      */
@@ -144,7 +144,7 @@ class Events
     /**
      * createDispatcher.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @return EventDispatcher
      */

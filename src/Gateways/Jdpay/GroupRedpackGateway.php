@@ -14,7 +14,7 @@ class GroupRedpackGateway extends Gateway
     /**
      * Pay an order.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string $endpoint
      * @param array  $payload
@@ -51,7 +51,7 @@ class GroupRedpackGateway extends Gateway
     /**
      * Get trade type config.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @return string
      */

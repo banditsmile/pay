@@ -28,7 +28,7 @@ class Pay
     /**
      * Bootstrap.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param array $config
      *
@@ -45,7 +45,7 @@ class Pay
     /**
      * Magic static call.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string $method
      * @param array  $params
@@ -65,7 +65,7 @@ class Pay
     /**
      * Create a instance.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string $method
      *
@@ -109,7 +109,7 @@ class Pay
     /**
      * Register log service.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @throws Exception
      */
@@ -129,7 +129,7 @@ class Pay
     /**
      * Register event service.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @return void
      */

@@ -21,7 +21,7 @@ abstract class Gateway implements GatewayInterface
     /**
      * Bootstrap.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @throws InvalidArgumentException
      */
@@ -33,7 +33,7 @@ abstract class Gateway implements GatewayInterface
     /**
      * Pay an order.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string $endpoint
      * @param array  $payload
@@ -45,7 +45,7 @@ abstract class Gateway implements GatewayInterface
     /**
      * Get trade type config.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @return string
      */
@@ -54,7 +54,7 @@ abstract class Gateway implements GatewayInterface
     /**
      * Schedule an order.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param array $payload
      *

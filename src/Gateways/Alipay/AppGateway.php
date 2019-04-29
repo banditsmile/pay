@@ -12,7 +12,7 @@ class AppGateway implements GatewayInterface
     /**
      * Pay an order.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string $endpoint
      * @param array  $payload

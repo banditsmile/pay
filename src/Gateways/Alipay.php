@@ -63,7 +63,7 @@ class Alipay implements GatewayApplicationInterface
     /**
      * Bootstrap.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param Config $config
      */
@@ -89,7 +89,7 @@ class Alipay implements GatewayApplicationInterface
     /**
      * Magic pay.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string $method
      * @param array  $params
@@ -106,7 +106,7 @@ class Alipay implements GatewayApplicationInterface
     /**
      * Pay an order.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string $gateway
      * @param array  $params
@@ -138,7 +138,7 @@ class Alipay implements GatewayApplicationInterface
     /**
      * Verify sign.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param null|array $data
      * @param bool       $refund
@@ -175,7 +175,7 @@ class Alipay implements GatewayApplicationInterface
     /**
      * Query an order.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string|array $order
      * @param string       $type
@@ -223,7 +223,7 @@ class Alipay implements GatewayApplicationInterface
     /**
      * Refund an order.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param array $order
      *
@@ -247,7 +247,7 @@ class Alipay implements GatewayApplicationInterface
     /**
      * Cancel an order.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param array $order
      *
@@ -273,7 +273,7 @@ class Alipay implements GatewayApplicationInterface
      *
      * @param string|array $order
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @throws GatewayException
      * @throws InvalidConfigException
@@ -295,7 +295,7 @@ class Alipay implements GatewayApplicationInterface
     /**
      * Download bill.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string|array $bill
      *
@@ -321,7 +321,7 @@ class Alipay implements GatewayApplicationInterface
     /**
      * Reply success to alipay.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @return Response
      */
@@ -335,7 +335,7 @@ class Alipay implements GatewayApplicationInterface
     /**
      * extend.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string   $method
      * @param callable $function
@@ -349,7 +349,7 @@ class Alipay implements GatewayApplicationInterface
     /**
      * Make pay gateway.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string $gateway
      *

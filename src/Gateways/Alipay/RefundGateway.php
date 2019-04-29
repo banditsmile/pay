@@ -7,7 +7,7 @@ class RefundGateway
     /**
      * Find.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param $order
      *

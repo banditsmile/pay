@@ -16,7 +16,7 @@ use Yansongda\Supports\Str;
 use Yansongda\Supports\Traits\HasHttpRequest;
 
 /**
- * @author yansongda <me@yansongda.cn>
+ * @author bandit <banditsmile@qq.com>
  *
  * @property string appid
  * @property string app_id
@@ -62,7 +62,7 @@ class Support
     /**
      * Bootstrap.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param Config $config
      */
@@ -77,7 +77,7 @@ class Support
     /**
      * __get.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param $key
      *
@@ -91,7 +91,7 @@ class Support
     /**
      * create.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param Config $config
      *
@@ -115,7 +115,7 @@ class Support
     /**
      * getInstance.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @throws InvalidArgumentException
      *
@@ -133,7 +133,7 @@ class Support
     /**
      * clear.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @return void
      */
@@ -145,7 +145,7 @@ class Support
     /**
      * Request wechat api.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string $endpoint
      * @param array  $data
@@ -179,7 +179,7 @@ class Support
     /**
      * Filter payload.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param array        $payload
      * @param array|string $params
@@ -216,7 +216,7 @@ class Support
     /**
      * Generate wechat sign.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param array $data
      *
@@ -244,7 +244,7 @@ class Support
     /**
      * Generate sign content.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param array $data
      *
@@ -266,7 +266,7 @@ class Support
     /**
      * Decrypt refund contents.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string $contents
      *
@@ -285,7 +285,7 @@ class Support
     /**
      * Convert array to xml.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param array $data
      *
@@ -312,7 +312,7 @@ class Support
     /**
      * Convert xml to array.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string $xml
      *
@@ -334,7 +334,7 @@ class Support
     /**
      * Get service config.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param null|string $key
      * @param null|mixed  $default
@@ -357,7 +357,7 @@ class Support
     /**
      * Get app id according to param type.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param string $type
      *
@@ -382,7 +382,7 @@ class Support
     /**
      * Get Base Uri.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @return string
      */
@@ -394,7 +394,7 @@ class Support
     /**
      * processingApiResult.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @param       $endpoint
      * @param array $result
@@ -435,7 +435,7 @@ class Support
     /**
      * setDevKey.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @throws GatewayException
      * @throws InvalidArgumentException
@@ -464,7 +464,7 @@ class Support
     /**
      * Set Http options.
      *
-     * @author yansongda <me@yansongda.cn>
+     * @author bandit <banditsmile@qq.com>
      *
      * @return self
      */
