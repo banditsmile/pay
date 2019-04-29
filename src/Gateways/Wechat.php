@@ -1,20 +1,20 @@
 <?php
 
-namespace Yansongda\Pay\Gateways;
+namespace Bandit\Pay\Gateways;
 
 use Exception;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Yansongda\Pay\Contracts\GatewayApplicationInterface;
-use Yansongda\Pay\Contracts\GatewayInterface;
-use Yansongda\Pay\Events;
-use Yansongda\Pay\Exceptions\GatewayException;
-use Yansongda\Pay\Exceptions\InvalidArgumentException;
-use Yansongda\Pay\Exceptions\InvalidGatewayException;
-use Yansongda\Pay\Exceptions\InvalidSignException;
-use Yansongda\Pay\Gateways\Wechat\Support;
-use Yansongda\Pay\Log;
+use Bandit\Pay\Contracts\GatewayApplicationInterface;
+use Bandit\Pay\Contracts\GatewayInterface;
+use Bandit\Pay\Events;
+use Bandit\Pay\Exceptions\GatewayException;
+use Bandit\Pay\Exceptions\InvalidArgumentException;
+use Bandit\Pay\Exceptions\InvalidGatewayException;
+use Bandit\Pay\Exceptions\InvalidSignException;
+use Bandit\Pay\Gateways\Wechat\Support;
+use Bandit\Pay\Log;
 use Yansongda\Supports\Collection;
 use Yansongda\Supports\Config;
 use Yansongda\Supports\Str;

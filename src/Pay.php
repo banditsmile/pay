@@ -1,13 +1,13 @@
 <?php
 
-namespace Yansongda\Pay;
+namespace Bandit\Pay;
 
 use Exception;
-use Yansongda\Pay\Contracts\GatewayApplicationInterface;
-use Yansongda\Pay\Exceptions\InvalidGatewayException;
-use Yansongda\Pay\Gateways\Alipay;
-use Yansongda\Pay\Gateways\Wechat;
-use Yansongda\Pay\Listeners\KernelLogSubscriber;
+use Bandit\Pay\Contracts\GatewayApplicationInterface;
+use Bandit\Pay\Exceptions\InvalidGatewayException;
+use Bandit\Pay\Gateways\Alipay;
+use Bandit\Pay\Gateways\Wechat;
+use Bandit\Pay\Listeners\KernelLogSubscriber;
 use Yansongda\Supports\Config;
 use Yansongda\Supports\Log;
 use Yansongda\Supports\Str;

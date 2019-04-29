@@ -1,6 +1,6 @@
 <?php
 
-namespace Yansongda\Pay\Events;
+namespace Bandit\Pay\Events;
 
 class Event extends \Symfony\Component\EventDispatcher\Event
 {

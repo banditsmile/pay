@@ -1,12 +1,12 @@
 <?php
 
-namespace Yansongda\Pay\Gateways\Jdpay;
+namespace Bandit\Pay\Gateways\Jdpay;
 
-use Yansongda\Pay\Exceptions\GatewayException;
-use Yansongda\Pay\Exceptions\InvalidArgumentException;
-use Yansongda\Pay\Exceptions\InvalidSignException;
-use Yansongda\Pay\Gateways\Jdpay;
-use Yansongda\Supports\Collection;
+use Bandit\Pay\Exceptions\GatewayException;
+use Bandit\Pay\Exceptions\InvalidArgumentException;
+use Bandit\Pay\Exceptions\InvalidSignException;
+use Bandit\Pay\Gateways\Jdpay;
+use Bandit\Supports\Collection;
 
 class MiniappGateway extends MpGateway
 {

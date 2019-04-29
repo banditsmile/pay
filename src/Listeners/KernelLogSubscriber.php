@@ -1,10 +1,10 @@
 <?php
 
-namespace Yansongda\Pay\Listeners;
+namespace Bandit\Pay\Listeners;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Yansongda\Pay\Events;
-use Yansongda\Pay\Log;
+use Bandit\Pay\Events;
+use Bandit\Pay\Log;
 
 class KernelLogSubscriber implements EventSubscriberInterface
 {

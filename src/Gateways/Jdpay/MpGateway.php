@@ -1,14 +1,14 @@
 <?php
 
-namespace Yansongda\Pay\Gateways\Jdpay;
+namespace Bandit\Pay\Gateways\Jdpay;
 
 use Exception;
-use Yansongda\Pay\Events;
-use Yansongda\Pay\Exceptions\GatewayException;
-use Yansongda\Pay\Exceptions\InvalidArgumentException;
-use Yansongda\Pay\Exceptions\InvalidSignException;
-use Yansongda\Supports\Collection;
-use Yansongda\Supports\Str;
+use Bandit\Pay\Events;
+use Bandit\Pay\Exceptions\GatewayException;
+use Bandit\Pay\Exceptions\InvalidArgumentException;
+use Bandit\Pay\Exceptions\InvalidSignException;
+use Bandit\Supports\Collection;
+use Bandit\Supports\Str;
 
 class MpGateway extends Gateway
 {

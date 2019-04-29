@@ -1,12 +1,12 @@
 <?php
 
-namespace Yansongda\Pay\Gateways\Alipay;
+namespace Bandit\Pay\Gateways\Alipay;
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Yansongda\Pay\Contracts\GatewayInterface;
-use Yansongda\Pay\Events;
-use Yansongda\Pay\Exceptions\InvalidConfigException;
+use Bandit\Pay\Contracts\GatewayInterface;
+use Bandit\Pay\Events;
+use Bandit\Pay\Exceptions\InvalidConfigException;
 
 class WebGateway implements GatewayInterface
 {

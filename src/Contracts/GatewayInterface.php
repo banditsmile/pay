@@ -1,6 +1,6 @@
 <?php
 
-namespace Yansongda\Pay\Contracts;
+namespace Bandit\Pay\Contracts;
 
 use Symfony\Component\HttpFoundation\Response;
 use Yansongda\Supports\Collection;

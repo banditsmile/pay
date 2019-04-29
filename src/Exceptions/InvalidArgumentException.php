@@ -1,6 +1,6 @@
 <?php
 
-namespace Yansongda\Pay\Exceptions;
+namespace Bandit\Pay\Exceptions;
 
 class InvalidArgumentException extends Exception
 {

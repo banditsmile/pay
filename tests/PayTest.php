@@ -1,10 +1,10 @@
 <?php
 
-namespace Yansongda\Pay\Tests;
+namespace Bandit\Pay\Tests;
 
-use Yansongda\Pay\Contracts\GatewayApplicationInterface;
-use Yansongda\Pay\Exceptions\GatewayException;
-use Yansongda\Pay\Pay;
+use Bandit\Pay\Contracts\GatewayApplicationInterface;
+use Bandit\Pay\Exceptions\GatewayException;
+use Bandit\Pay\Pay;
 
 class PayTest extends TestCase
 {
