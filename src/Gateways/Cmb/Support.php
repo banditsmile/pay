@@ -232,9 +232,7 @@ class Support
             throw new InvalidArgumentException('Missing Cmb Config -- [key]');
         }
 
-        ksort($data);
-
-        $string = md5(self::getSignContent($data).'&key='.$key);
+        $string = hash('sha256', self::getSignContent($data).'&key='.$key);
 
         Log::debug('Cmb Generate Sign Before UPPER', [$data, $string]);
 
@@ -254,12 +252,18 @@ class Support
     {
         $buff = '';
 
-        foreach ($data as $k => $v) {
-            $buff .= ($k != 'sign' && $v != '' && !is_array($v)) ? $k.'='.$v.'&' : '';
+        $keys = array_keys($data);
+        $keysLower = array_map('strtolower', $keys);
+        $keysMap = array_combine($keys, $keysLower);
+        asort($keysMap);
+        foreach ($keysMap as $key=>$val) {
+            if ($val=='sign') {
+                continue;
+            }
+            $value = $data[$key];
+            $buff .= $key.'='.$value.'&';
         }
-
         Log::debug('Cmb Generate Sign Content Before Trim', [$data, $buff]);
-
         return trim($buff, '&');
     }
 
