@@ -13,7 +13,7 @@ use Bandit\Pay\Exceptions\GatewayException;
 use Bandit\Pay\Exceptions\InvalidArgumentException;
 use Bandit\Pay\Exceptions\InvalidGatewayException;
 use Bandit\Pay\Exceptions\InvalidSignException;
-use Bandit\Pay\Gateways\Jdpay\Support;
+use Bandit\Pay\Gateways\Cmb\Support;
 use Bandit\Pay\Log;
 use Yansongda\Supports\Collection;
 use Yansongda\Supports\Config;
@@ -30,7 +30,7 @@ use Yansongda\Supports\Str;
  * @method Collection transfer(array $config) 企业付款
  * @method RedirectResponse wap(array $config) H5 支付
  */
-class Jdpay implements GatewayApplicationInterface
+class Cmb implements GatewayApplicationInterface
 {
     /**
      * 普通模式.
@@ -43,35 +43,45 @@ class Jdpay implements GatewayApplicationInterface
     const MODE_DEV = 'dev';
 
     /**
-     * h5支付
+     * 香港钱包 API.
      */
-
-    const MODE_H5  = 'h5';
+    const MODE_HK = 'hk';
 
     /**
-     * pc支付
+     * 境外 API.
      */
-    const MODE_PC  = 'pc';
+    const MODE_US = 'us';
+
+    /**
+     * 服务商模式.
+     */
+    const MODE_SERVICE = 'service';
+
+    /**
+     * 支付请求的域名和其他不一样.
+     */
+    const MODE_PAY = 'pay';
+    const MODE_PAY_DEV = 'pay_dev';
 
     /**
      * Const url.
      */
     const URL = [
-        self::MODE_NORMAL  => 'https://paygate.jd.com/',
-        self::MODE_DEV     => 'https://paygate.jd.com/sandboxnew/',
-        self::MODE_H5     => 'https://h5pay.jd.com/',
-        self::MODE_PC     => 'https://wepay.jd.com/',
+        self::MODE_PAY     => 'https://netpay.cmbchina.com/',
+        self::MODE_PAY_DEV => 'http://121.15.180.66:801/',
+        self::MODE_NORMAL  => 'https://payment.ebank.cmbchina.com/',
+        self::MODE_DEV     => 'http://121.15.180.66:801/',
     ];
 
     /**
-     * Jdpay payload.
+     * Cmb payload.
      *
      * @var array
      */
     protected $payload;
 
     /**
-     * Jdpay gateway.
+     * Cmb gateway.
      *
      * @var string
      */
@@ -90,14 +100,13 @@ class Jdpay implements GatewayApplicationInterface
     {
         $this->gateway = Support::create($config)->getBaseUri();
         $this->payload = [
-            'version'            => $config->get('version', 'V2.0'),
-            'merchant'           => $config->get('merchant', ''),
-            'currency'           => $config->get('currency', 'CNY'),
-            'nonce_str'          => Str::random(),
-            'notifyUrl'          => $config->get('notifyUrl', ''),
-            'sign'               => '',
-            'trade_type'         => '',
-            'ip'                 => Request::createFromGlobals()->getClientIp(),
+            'version'            => $config->get('version', ''),
+            'charset'           => $config->get('mch_id', ''),
+            'signType'        => Str::random(),
+            'notify_url'       => $config->get('notify_url', ''),
+            'sign'             => '',
+            'trade_type'       => '',
+            'spbill_create_ip' => Request::createFromGlobals()->getClientIp(),
         ];
 
         if ($config->get('mode', self::MODE_NORMAL) === static::MODE_SERVICE) {
@@ -139,7 +148,7 @@ class Jdpay implements GatewayApplicationInterface
      */
     public function pay($gateway, $params = [])
     {
-        Events::dispatch(Events::PAY_STARTING, new Events\PayStarting('Jdpay', $gateway, $params));
+        Events::dispatch(Events::PAY_STARTING, new Events\PayStarting('Cmb', $gateway, $params));
 
         $this->payload = array_merge($this->payload, $params);
 
@@ -169,7 +178,7 @@ class Jdpay implements GatewayApplicationInterface
     {
         $content = $content ?? Request::createFromGlobals()->getContent();
 
-        Events::dispatch(Events::REQUEST_RECEIVED, new Events\RequestReceived('Jdpay', '', [$content]));
+        Events::dispatch(Events::REQUEST_RECEIVED, new Events\RequestReceived('Cmb', '', [$content]));
 
         $data = Support::fromXml($content);
         if ($refund) {
@@ -177,15 +186,15 @@ class Jdpay implements GatewayApplicationInterface
             $data = array_merge(Support::fromXml($decrypt_data), $data);
         }
 
-        Log::debug('Resolved The Received Jdpay Request Data', $data);
+        Log::debug('Resolved The Received Cmb Request Data', $data);
 
         if ($refund || Support::generateSign($data) === $data['sign']) {
             return new Collection($data);
         }
 
-        Events::dispatch(Events::SIGN_FAILED, new Events\SignFailed('Jdpay', '', $data));
+        Events::dispatch(Events::SIGN_FAILED, new Events\SignFailed('Cmb', '', $data));
 
-        throw new InvalidSignException('Jdpay Sign Verify FAILED', $data);
+        throw new InvalidSignException('Cmb Sign Verify FAILED', $data);
     }
 
     /**
@@ -210,7 +219,7 @@ class Jdpay implements GatewayApplicationInterface
 
         $this->payload = Support::filterPayload($this->payload, $order);
 
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Jdpay', 'Find', $this->gateway, $this->payload));
+        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Cmb', 'Find', $this->gateway, $this->payload));
 
         return Support::requestApi(
             $refund ? 'pay/refundquery' : 'pay/orderquery',
@@ -235,7 +244,7 @@ class Jdpay implements GatewayApplicationInterface
     {
         $this->payload = Support::filterPayload($this->payload, $order, true);
 
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Jdpay', 'Refund', $this->gateway, $this->payload));
+        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Cmb', 'Refund', $this->gateway, $this->payload));
 
         return Support::requestApi(
             'secapi/pay/refund',
@@ -263,7 +272,7 @@ class Jdpay implements GatewayApplicationInterface
 
         $this->payload = Support::filterPayload($this->payload, $order, true);
 
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Jdpay', 'Cancel', $this->gateway, $this->payload));
+        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Cmb', 'Cancel', $this->gateway, $this->payload));
 
         return Support::requestApi(
             'secapi/pay/reverse',
@@ -291,7 +300,7 @@ class Jdpay implements GatewayApplicationInterface
 
         $this->payload = Support::filterPayload($this->payload, $order);
 
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Jdpay', 'Close', $this->gateway, $this->payload));
+        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Cmb', 'Close', $this->gateway, $this->payload));
 
         return Support::requestApi('pay/closeorder', $this->payload);
     }
@@ -307,7 +316,7 @@ class Jdpay implements GatewayApplicationInterface
      */
     public function success(): Response
     {
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Jdpay', 'Success', $this->gateway));
+        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Cmb', 'Success', $this->gateway));
 
         return Response::create(
             Support::toXml(['return_code' => 'SUCCESS', 'return_msg' => 'OK']),
@@ -334,7 +343,7 @@ class Jdpay implements GatewayApplicationInterface
 
         $this->payload = Support::filterPayload($this->payload, $params, true);
 
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Jdpay', 'Download', $this->gateway, $this->payload));
+        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Cmb', 'Download', $this->gateway, $this->payload));
 
         $result = Support::getInstance()->post(
             'pay/downloadbill',
@@ -342,7 +351,7 @@ class Jdpay implements GatewayApplicationInterface
         );
 
         if (is_array($result)) {
-            throw new GatewayException('Get Jdpay API Error: '.$result['return_msg'], $result);
+            throw new GatewayException('Get Cmb API Error: '.$result['return_msg'], $result);
         }
 
         return $result;

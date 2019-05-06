@@ -1,14 +1,15 @@
 <?php
 
-namespace Bandit\Pay\Gateways\Jdpay;
+namespace Bandit\Pay\Gateways\Cmb;
 
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Bandit\Pay\Events;
 use Bandit\Pay\Exceptions\GatewayException;
 use Bandit\Pay\Exceptions\InvalidArgumentException;
 use Bandit\Pay\Exceptions\InvalidSignException;
+use Yansongda\Supports\Collection;
 
-class WapGateway extends Gateway
+class ScanGateway extends Gateway
 {
     /**
      * Pay an order.
@@ -22,20 +23,16 @@ class WapGateway extends Gateway
      * @throws InvalidArgumentException
      * @throws InvalidSignException
      *
-     * @return RedirectResponse
+     * @return Collection
      */
-    public function pay($endpoint, array $payload): RedirectResponse
+    public function pay($endpoint, array $payload): Collection
     {
+        $payload['spbill_create_ip'] = Request::createFromGlobals()->server->get('SERVER_ADDR');
         $payload['trade_type'] = $this->getTradeType();
 
-        Events::dispatch(Events::PAY_STARTED, new Events\PayStarted('Jdpay', 'Wap', $endpoint, $payload));
+        Events::dispatch(Events::PAY_STARTED, new Events\PayStarted('Cmb', 'Scan', $endpoint, $payload));
 
-        $mweb_url = $this->preOrder($payload)->get('callbackUrl');
-
-        $url = is_null(Support::getInstance()->return_url) ? $mweb_url : $mweb_url.
-                        '&callbackUrl='.urlencode(Support::getInstance()->return_url);
-
-        return RedirectResponse::create($url);
+        return $this->preOrder($payload);
     }
 
     /**
@@ -47,6 +44,6 @@ class WapGateway extends Gateway
      */
     protected function getTradeType(): string
     {
-        return 'MWEB';
+        return 'NATIVE';
     }
 }
