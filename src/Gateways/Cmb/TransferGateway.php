@@ -38,15 +38,21 @@ class TransferGateway extends Gateway
         $payload['mchid'] = $payload['mch_id'];
 
         if (php_sapi_name() !== 'cli' && !isset($payload['spbill_create_ip'])) {
-            $payload['spbill_create_ip'] = Request::createFromGlobals()->server->get('SERVER_ADDR');
+            $payload['spbill_create_ip']
+                = Request::createFromGlobals()->server->get('SERVER_ADDR');
         }
 
-        unset($payload['appid'], $payload['mch_id'], $payload['trade_type'],
-            $payload['notify_url'], $payload['type']);
+        unset(
+            $payload['appid'], $payload['mch_id'], $payload['trade_type'],
+            $payload['notify_url'], $payload['type']
+        );
 
         $payload['sign'] = Support::generateSign($payload);
 
-        Events::dispatch(Events::PAY_STARTED, new Events\PayStarted('Cmb', 'Transfer', $endpoint, $payload));
+        Events::dispatch(
+            Events::PAY_STARTED,
+            new Events\PayStarted('Cmb', 'Transfer', $endpoint, $payload)
+        );
 
         return Support::requestApi(
             'mmpaymkttransfers/promotion/transfers',

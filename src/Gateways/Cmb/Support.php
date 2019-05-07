@@ -232,11 +232,14 @@ class Support
             throw new InvalidArgumentException('Missing Cmb Config -- [key]');
         }
 
-        $string = hash('sha256', self::getSignContent($data).'&key='.$key);
+        $string = hash(
+            'sha256',
+            self::getSignContent($data).'&key='.$key
+        );
 
         Log::debug('Cmb Generate Sign Before UPPER', [$data, $string]);
 
-        return strtoupper($string);
+        return bin2hex($string);
     }
 
     /**
@@ -393,6 +396,16 @@ class Support
     public function getBaseUri()
     {
         return $this->baseUri;
+    }
+
+    /**
+     * @param $uri
+     * @return $this
+     */
+    public function setBaseUri($uri)
+    {
+        $this->baseUri = $uri;
+        return $this;
     }
 
     /**

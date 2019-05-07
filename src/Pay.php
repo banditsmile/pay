@@ -121,7 +121,7 @@ class Pay
     {
         $logger = Log::createLogger(
             $this->config->get('log.file'),
-            'Bandit.pay',
+            'bandit.pay',
             $this->config->get('log.level', 'warning'),
             $this->config->get('log.type', 'daily'),
             $this->config->get('log.max_file', 30)

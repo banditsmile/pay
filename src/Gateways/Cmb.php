@@ -100,21 +100,18 @@ class Cmb implements GatewayApplicationInterface
     {
         $this->gateway = Support::create($config)->getBaseUri();
         $this->payload = [
-            'version'            => $config->get('version', ''),
-            'charset'           => $config->get('mch_id', ''),
-            'signType'        => Str::random(),
-            'notify_url'       => $config->get('notify_url', ''),
-            'sign'             => '',
-            'trade_type'       => '',
-            'spbill_create_ip' => Request::createFromGlobals()->getClientIp(),
+            'version'   => $config->get('version', ''),
+            'charset'   => $config->get('charset', ''),
+            'signType'  => $config->get('signType', ''),
+            'reqData'   => [
+                'dateTime'    =>date("YmdHis"),
+                'branchNo'    =>$config->get('branchNo'),
+                'merchantNo'  =>$config->get('merchantNo'),
+                'date'        =>date("Ymd"),
+                'payNoticeUrl'=>$config->get('payNoticeUrl'),
+                'orderNo'     =>'',
+            ]
         ];
-
-        if ($config->get('mode', self::MODE_NORMAL) === static::MODE_SERVICE) {
-            $this->payload = array_merge($this->payload, [
-                'sub_mch_id' => $config->get('sub_mch_id'),
-                'sub_appid'  => $config->get('sub_app_id', ''),
-            ]);
-        }
     }
 
     /**
@@ -148,9 +145,12 @@ class Cmb implements GatewayApplicationInterface
      */
     public function pay($gateway, $params = [])
     {
-        Events::dispatch(Events::PAY_STARTING, new Events\PayStarting('Cmb', $gateway, $params));
+        Events::dispatch(
+            Events::PAY_STARTING,
+            new Events\PayStarting('Cmb', $gateway, $params)
+        );
 
-        $this->payload = array_merge($this->payload, $params);
+        $this->payload['reqData'] = array_merge($this->payload['reqData'], $params);
 
         $gateway = get_class($this).'\\'.Str::studly($gateway).'Gateway';
 
@@ -178,7 +178,10 @@ class Cmb implements GatewayApplicationInterface
     {
         $content = $content ?? Request::createFromGlobals()->getContent();
 
-        Events::dispatch(Events::REQUEST_RECEIVED, new Events\RequestReceived('Cmb', '', [$content]));
+        Events::dispatch(
+            Events::REQUEST_RECEIVED,
+            new Events\RequestReceived('Cmb', '', [$content])
+        );
 
         $data = Support::fromXml($content);
         if ($refund) {
@@ -192,7 +195,10 @@ class Cmb implements GatewayApplicationInterface
             return new Collection($data);
         }
 
-        Events::dispatch(Events::SIGN_FAILED, new Events\SignFailed('Cmb', '', $data));
+        Events::dispatch(
+            Events::SIGN_FAILED,
+            new Events\SignFailed('Cmb', '', $data)
+        );
 
         throw new InvalidSignException('Cmb Sign Verify FAILED', $data);
     }
@@ -217,12 +223,16 @@ class Cmb implements GatewayApplicationInterface
             unset($this->payload['spbill_create_ip']);
         }
 
-        $this->payload = Support::filterPayload($this->payload, $order);
+        $this->payload['reqData']
+            = Support::filterPayload($this->payload['reqData'], $order);
 
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Cmb', 'Find', $this->gateway, $this->payload));
+        Events::dispatch(
+            Events::METHOD_CALLED,
+            new Events\MethodCalled('Cmb', 'Find', $this->gateway, $this->payload)
+        );
 
         return Support::requestApi(
-            $refund ? 'pay/refundquery' : 'pay/orderquery',
+            $refund ? 'Netpayment/BaseHttp.dll?QueryRefundByDate':'Netpayment/BaseHttp.dll?QuerySingleOrder' ,
             $this->payload
         );
     }
@@ -244,10 +254,13 @@ class Cmb implements GatewayApplicationInterface
     {
         $this->payload = Support::filterPayload($this->payload, $order, true);
 
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Cmb', 'Refund', $this->gateway, $this->payload));
+        Events::dispatch(
+            Events::METHOD_CALLED,
+            new Events\MethodCalled('Cmb', 'Refund', $this->gateway, $this->payload)
+        );
 
         return Support::requestApi(
-            'secapi/pay/refund',
+            'NetPayment/BaseHttp.dll?DoRefund',
             $this->payload,
             true
         );
@@ -268,11 +281,12 @@ class Cmb implements GatewayApplicationInterface
      */
     public function cancel($order): Collection
     {
-        unset($this->payload['spbill_create_ip']);
-
         $this->payload = Support::filterPayload($this->payload, $order, true);
 
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Cmb', 'Cancel', $this->gateway, $this->payload));
+        Events::dispatch(
+            Events::METHOD_CALLED,
+            new Events\MethodCalled('Cmb', 'Cancel', $this->gateway, $this->payload)
+        );
 
         return Support::requestApi(
             'secapi/pay/reverse',
@@ -300,7 +314,10 @@ class Cmb implements GatewayApplicationInterface
 
         $this->payload = Support::filterPayload($this->payload, $order);
 
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Cmb', 'Close', $this->gateway, $this->payload));
+        Events::dispatch(
+            Events::METHOD_CALLED,
+            new Events\MethodCalled('Cmb', 'Close', $this->gateway, $this->payload)
+        );
 
         return Support::requestApi('pay/closeorder', $this->payload);
     }
@@ -316,7 +333,10 @@ class Cmb implements GatewayApplicationInterface
      */
     public function success(): Response
     {
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Cmb', 'Success', $this->gateway));
+        Events::dispatch(
+            Events::METHOD_CALLED,
+            new Events\MethodCalled('Cmb', 'Success', $this->gateway)
+        );
 
         return Response::create(
             Support::toXml(['return_code' => 'SUCCESS', 'return_msg' => 'OK']),
@@ -343,7 +363,10 @@ class Cmb implements GatewayApplicationInterface
 
         $this->payload = Support::filterPayload($this->payload, $params, true);
 
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Cmb', 'Download', $this->gateway, $this->payload));
+        Events::dispatch(
+            Events::METHOD_CALLED,
+            new Events\MethodCalled('Cmb', 'Download', $this->gateway, $this->payload)
+        );
 
         $result = Support::getInstance()->post(
             'pay/downloadbill',
@@ -373,9 +396,14 @@ class Cmb implements GatewayApplicationInterface
         $app = new $gateway();
 
         if ($app instanceof GatewayInterface) {
-            return $app->pay($this->gateway, array_filter($this->payload, function ($value) {
-                return $value !== '' && !is_null($value);
-            }));
+            return $app->pay(
+                $this->gateway,
+                array_filter(
+                    $this->payload, function ($value) {
+                        return !is_null($value);
+                    }
+                )
+            );
         }
 
         throw new InvalidGatewayException("Pay Gateway [{$gateway}] Must Be An Instance Of GatewayInterface");
