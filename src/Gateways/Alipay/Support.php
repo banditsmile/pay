@@ -177,7 +177,7 @@ class Support
     /**
      * Verify sign.
      *
-     * @author Bandit <me@yansonga.cn>
+     * @author Bandit <banditsmile@qq.com>
      *
      * @param array       $data
      * @param bool        $sync
@@ -245,7 +245,7 @@ class Support
     /**
      * Convert encoding.
      *
-     * @author Bandit <me@yansonga.cn>
+     * @author Bandit <banditsmile@qq.com>
      *
      * @param string|array $data
      * @param string       $to
