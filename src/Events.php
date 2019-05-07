@@ -24,51 +24,51 @@ class Events
     /**
      * Start pay.
      *
-     * @Event("Yansongda\Pay\Events\PayStarting")
+     * @Event("Bandit\Pay\Events\PayStarting")
      */
-    const PAY_STARTING = 'yansongda.pay.starting';
+    const PAY_STARTING = 'Bandit.pay.starting';
 
     /**
      * Pay started.
      *
-     * @Event("Yansongda\Pay\Events\PayStarted")
+     * @Event("Bandit\Pay\Events\PayStarted")
      */
-    const PAY_STARTED = 'yansongda.pay.started';
+    const PAY_STARTED = 'Bandit.pay.started';
 
     /**
      * Api requesting.
      *
-     * @Event("Yansongda\Pay\Events\ApiRequesting")
+     * @Event("Bandit\Pay\Events\ApiRequesting")
      */
-    const API_REQUESTING = 'yansongda.pay.api.requesting';
+    const API_REQUESTING = 'Bandit.pay.api.requesting';
 
     /**
      * Api requested.
      *
-     * @Event("Yansongda\Pay\Events\ApiRequested")
+     * @Event("Bandit\Pay\Events\ApiRequested")
      */
-    const API_REQUESTED = 'yansongda.pay.api.requested';
+    const API_REQUESTED = 'Bandit.pay.api.requested';
 
     /**
      * Sign error.
      *
-     * @Event("Yansongda\Pay\Events\SignFailed")
+     * @Event("Bandit\Pay\Events\SignFailed")
      */
-    const SIGN_FAILED = 'yansongda.pay.sign.failed';
+    const SIGN_FAILED = 'Bandit.pay.sign.failed';
 
     /**
      * Receive request.
      *
-     * @Event("Yansongda\Pay\Events\RequestReceived")
+     * @Event("Bandit\Pay\Events\RequestReceived")
      */
-    const REQUEST_RECEIVED = 'yansongda.pay.request.received';
+    const REQUEST_RECEIVED = 'Bandit.pay.request.received';
 
     /**
      * Method called.
      *
-     * @Event("Yansongda\Pay\Events\MethodCalled")
+     * @Event("Bandit\Pay\Events\MethodCalled")
      */
-    const METHOD_CALLED = 'yansongda.pay.method.called';
+    const METHOD_CALLED = 'Bandit.pay.method.called';
 
     /**
      * dispatcher.

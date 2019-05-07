@@ -10,7 +10,7 @@ interface GatewayApplicationInterface
     /**
      * To pay.
      *
-     * @author yansongda <me@yansonga.cn>
+     * @author Bandit <me@yansonga.cn>
      *
      * @param string $gateway
      * @param array  $params

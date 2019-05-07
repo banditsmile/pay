@@ -2,7 +2,7 @@
 
 namespace Bandit\Pay\Gateways\Alipay;
 
-use Yansongda\Pay\Events;
+use Bandit\Pay\Events;
 use Bandit\Pay\Exceptions\GatewayException;
 use Bandit\Pay\Exceptions\InvalidConfigException;
 use Bandit\Pay\Exceptions\InvalidSignException;
@@ -177,7 +177,7 @@ class Support
     /**
      * Verify sign.
      *
-     * @author yansongda <me@yansonga.cn>
+     * @author Bandit <me@yansonga.cn>
      *
      * @param array       $data
      * @param bool        $sync
@@ -245,7 +245,7 @@ class Support
     /**
      * Convert encoding.
      *
-     * @author yansongda <me@yansonga.cn>
+     * @author Bandit <me@yansonga.cn>
      *
      * @param string|array $data
      * @param string       $to

@@ -7,6 +7,8 @@ use Bandit\Pay\Contracts\GatewayApplicationInterface;
 use Bandit\Pay\Exceptions\InvalidGatewayException;
 use Bandit\Pay\Gateways\Alipay;
 use Bandit\Pay\Gateways\Wechat;
+use Bandit\Pay\Gateways\Jdpay;
+use Bandit\Pay\Gateways\Cmb;
 use Bandit\Pay\Listeners\KernelLogSubscriber;
 use Yansongda\Supports\Config;
 use Yansongda\Supports\Log;
@@ -15,6 +17,8 @@ use Yansongda\Supports\Str;
 /**
  * @method static Alipay alipay(array $config) 支付宝
  * @method static Wechat wechat(array $config) 微信
+ * @method static Jdpay jdpay(array $config) 京东支付
+ * @method static Cmb cmb(array $config) 招行一网通
  */
 class Pay
 {
@@ -87,7 +91,7 @@ class Pay
     /**
      * Make a gateway.
      *
-     * @author yansongda <me@yansonga.cn>
+     * @author Bandit <me@yansonga.cn>
      *
      * @param string $gateway
      *
@@ -117,7 +121,7 @@ class Pay
     {
         $logger = Log::createLogger(
             $this->config->get('log.file'),
-            'yansongda.pay',
+            'Bandit.pay',
             $this->config->get('log.level', 'warning'),
             $this->config->get('log.type', 'daily'),
             $this->config->get('log.max_file', 30)

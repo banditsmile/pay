@@ -191,14 +191,14 @@ class Alipay implements GatewayApplicationInterface
     {
         if ($type === true || $transfer) {
             Log::warning('DEPRECATED: In Alipay->find(), the REFUND/TRANSFER param is deprecated since v2.7.3, use TYPE param instead!');
-            @trigger_error('In yansongda/pay Alipay->find(), the REFUND/TRANSFER param is deprecated since v2.7.3, use TYPE param instead!', E_USER_DEPRECATED);
+            @trigger_error('In Bandit/pay Alipay->find(), the REFUND/TRANSFER param is deprecated since v2.7.3, use TYPE param instead!', E_USER_DEPRECATED);
 
             $type = $type === true ? 'refund' : 'transfer';
         }
 
         if ($type === false) {
             Log::warning('DEPRECATED: In Alipay->find(), the REFUND/TRANSFER param is deprecated since v2.7.3, use TYPE param instead!');
-            @trigger_error('In yansongda/pay Alipay->find(), the REFUND/TRANSFER param is deprecated since v2.7.3, use TYPE param instead!', E_USER_DEPRECATED);
+            @trigger_error('In Bandit/pay Alipay->find(), the REFUND/TRANSFER param is deprecated since v2.7.3, use TYPE param instead!', E_USER_DEPRECATED);
 
             $type = 'wap';
         }
