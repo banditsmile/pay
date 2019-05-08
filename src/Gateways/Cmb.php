@@ -21,56 +21,59 @@ use Yansongda\Supports\Str;
 
 /**
  * @method Response app(array $config) APP 支付
- * @method Collection groupRedpack(array $config) 分裂红包
  * @method Collection miniapp(array $config) 小程序支付
  * @method Collection mp(array $config) 公众号支付
  * @method Collection pos(array $config) 刷卡支付
- * @method Collection redpack(array $config) 普通红包
  * @method Collection scan(array $config) 扫码支付
  * @method Collection transfer(array $config) 企业付款
  * @method RedirectResponse wap(array $config) H5 支付
  */
 class Cmb implements GatewayApplicationInterface
 {
-    /**
-     * 普通模式.
-     */
-    const MODE_NORMAL = 'normal';
 
     /**
      * 沙箱模式.
      */
-    const MODE_DEV = 'dev';
+    const ENV_DEV = 'dev';
 
     /**
-     * 香港钱包 API.
+     * 生成模式.
      */
-    const MODE_HK = 'hk';
+    const ENV_PRO = 'pro';
 
     /**
-     * 境外 API.
+     * 支付请求
      */
-    const MODE_US = 'us';
-
+    const MODE_NET_PAY = 'net_pay';
     /**
-     * 服务商模式.
+     * 普通模式.
      */
-    const MODE_SERVICE = 'service';
-
+    const MODE_NORMAL = 'normal';
     /**
-     * 支付请求的域名和其他不一样.
+     * 签约
      */
-    const MODE_PAY = 'pay';
-    const MODE_PAY_DEV = 'pay_dev';
+    const MODE_MOBILE = 'mobile';
+    /**
+     * 用户协议
+     */
+    const MODE_B2B = 'b2b';
 
     /**
      * Const url.
      */
     const URL = [
-        self::MODE_PAY     => 'https://netpay.cmbchina.com/',
-        self::MODE_PAY_DEV => 'http://121.15.180.66:801/',
-        self::MODE_NORMAL  => 'https://payment.ebank.cmbchina.com/',
-        self::MODE_DEV     => 'http://121.15.180.66:801/',
+        self::ENV_PRO=>[
+            self::MODE_NET_PAY     => 'https://netpay.cmbchina.com/',
+            self::MODE_MOBILE      => 'https://mobile.cmbchina.com/',
+            self::MODE_NORMAL      => 'https://payment.ebank.cmbchina.com/',
+            self::MODE_B2B         => 'http://121.15.180.66:801/',
+        ],
+        self::ENV_DEV=>[
+            self::MODE_NET_PAY     => 'https://netpay.cmbchina.com/',
+            self::MODE_MOBILE      => 'https://netpay.cmbchina.com/',
+            self::MODE_NORMAL      => 'https://payment.ebank.cmbchina.com/',
+            self::MODE_B2B         => 'http://121.15.180.72/',
+        ]
     ];
 
     /**
@@ -86,6 +89,9 @@ class Cmb implements GatewayApplicationInterface
      * @var string
      */
     protected $gateway;
+
+    private $env = self::ENV_PRO;
+    private $model = self::MODE_NORMAL;
 
     /**
      * Bootstrap.
@@ -112,6 +118,7 @@ class Cmb implements GatewayApplicationInterface
                 'orderNo'     =>'',
             ]
         ];
+        $this->env = $config->get('env');
     }
 
     /**

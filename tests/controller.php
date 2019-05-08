@@ -11,7 +11,19 @@ class controller{
     {
         $conf = include './config.php';
         $this->conf = $conf['cmb'];
+        $this->conf['pubKey'] = $this->getPubKey();
     }
+
+    /**
+     * 招行验签公约 由定时任务通过账号api获取然后保存在缓存里面
+     *
+     * @return string
+     */
+    private function getPubKey()
+    {
+        return '';
+    }
+
 
     private function output($data)
     {

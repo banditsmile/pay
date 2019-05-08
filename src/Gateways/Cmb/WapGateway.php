@@ -35,12 +35,10 @@ class WapGateway extends Gateway
             new Events\PayStarted('Cmb', 'Wap', $endpoint, $payload)
         );
 
-        $uriMod = Cmb::MODE_PAY;
-        if (Support::getInstance()->mode==Cmb::MODE_DEV) {
-            $uriMod = Cmb::MODE_PAY_DEV;
-        }
         //支付下单接口跟其他不一样
-        Support::getInstance()->setBaseUri(Cmb::URL[$uriMod]);
+        $env = Support::getInstance()->env;
+        $mode = Cmb::MODE_NET_PAY;
+        Support::getInstance()->setBaseUri(Cmb::URL[$env][$mode]);
 
         $mweb_url = $this->preOrder($payload)->get('returnUrl');
 

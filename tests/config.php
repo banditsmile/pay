@@ -10,6 +10,7 @@ $config = [
         'mode'          =>'dev',
         'payNoticeUrl'  =>'http://www.merchant.com/path/payNotice.do',
         'signNoticeUrl' =>'http://www.merchant.com/path/payNotice.do',
+        'env'           =>'test',//test or pro
         'log'           =>[
                             'file'=>'bandit.pay',
                             'level'=>'warning',

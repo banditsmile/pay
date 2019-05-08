@@ -33,6 +33,9 @@ use Yansongda\Supports\Traits\HasHttpRequest;
  * @property array log
  * @property array http
  * @property string mode
+ * @property string env
+ * @property array config
+ * @property string baseUri
  */
 class Support
 {
@@ -59,6 +62,9 @@ class Support
      */
     private static $instance;
 
+    private $mode;
+    private $env;
+
     /**
      * Bootstrap.
      *
@@ -68,8 +74,10 @@ class Support
      */
     private function __construct(Config $config)
     {
-        $this->baseUri = Cmb::URL[$config->get('mode', Cmb::MODE_NORMAL)];
         $this->config = $config;
+        $this->env = $config->get('env');
+        $this->mode = $config->get('mode', Cmb::MODE_NORMAL);
+        $this->baseUri = Cmb::URL[$this->env][$this->mode];
 
         $this->setHttpOptions();
     }
@@ -159,19 +167,25 @@ class Support
      */
     public static function requestApi($endpoint, $data, $cert = false): Collection
     {
-        Events::dispatch(Events::API_REQUESTING, new Events\ApiRequesting('Cmb', '', self::$instance->getBaseUri().$endpoint, $data));
+        Events::dispatch(
+            Events::API_REQUESTING,
+            new Events\ApiRequesting('Cmb', '', self::$instance->getBaseUri().$endpoint, $data)
+        );
 
         $result = self::$instance->post(
             $endpoint,
-            self::toXml($data),
+            $data,
             $cert ? [
                 'cert'    => self::$instance->cert_client,
                 'ssl_key' => self::$instance->cert_key,
             ] : []
         );
-        $result = is_array($result) ? $result : self::fromXml($result);
+        $result = is_array($result) ? $result : json_decode($result, true);
 
-        Events::dispatch(Events::API_REQUESTED, new Events\ApiRequested('Cmb', '', self::$instance->getBaseUri().$endpoint, $result));
+        Events::dispatch(
+            Events::API_REQUESTED,
+            new Events\ApiRequested('Cmb', '', self::$instance->getBaseUri().$endpoint, $result)
+        );
 
         return self::processingApiResult($endpoint, $result);
     }
@@ -191,24 +205,7 @@ class Support
      */
     public static function filterPayload($payload, $params, $preserve_notify_url = false): array
     {
-        $type = self::getTypeName($params['type'] ?? '');
-
-        $payload = array_merge(
-            $payload,
-            is_array($params) ? $params : ['out_trade_no' => $params]
-        );
-        $payload['appid'] = self::$instance->getConfig($type, '');
-
-        if (self::$instance->getConfig('mode', Cmb::MODE_NORMAL) === Cmb::MODE_SERVICE) {
-            $payload['sub_appid'] = self::$instance->getConfig('sub_'.$type, '');
-        }
-
-        unset($payload['trade_type'], $payload['type']);
-        if (!$preserve_notify_url) {
-            unset($payload['notify_url']);
-        }
-
-        $payload['sign'] = self::generateSign($payload);
+        $payload['sign'] = self::generateSign($payload['reqData']);
 
         return $payload;
     }
@@ -266,11 +263,16 @@ class Support
             $value = $data[$key];
             $buff .= $key.'='.$value.'&';
         }
-        Log::debug('Cmb Generate Sign Content Before Trim', [$data, $buff]);
-        return trim($buff, '&');
+        $buff =  trim($buff, '&');
+        $buff = mb_convert_encoding($buff, "UTF-8");
+
+        Log::debug('Cmb Generate Sign Content', [$data, $buff]);
+        return $buff;
     }
 
     /**
+     * 招行没有退款通知
+     * @deprecated
      * Decrypt refund contents.
      *
      * @author bandit <banditsmile@qq.com>
@@ -281,6 +283,7 @@ class Support
      */
     public static function decryptRefundContents($contents): string
     {
+
         return openssl_decrypt(
             base64_decode($contents),
             'AES-256-ECB',
@@ -290,6 +293,8 @@ class Support
     }
 
     /**
+     * 招行返回的是json数据
+     * @deprecated
      * Convert array to xml.
      *
      * @author bandit <banditsmile@qq.com>
@@ -317,6 +322,8 @@ class Support
     }
 
     /**
+     * 招行返回的是json数据
+     * @deprecated
      * Convert xml to array.
      *
      * @author bandit <banditsmile@qq.com>
@@ -399,7 +406,10 @@ class Support
     }
 
     /**
+     * 根据具体业务调整请求域名
+     *
      * @param $uri
+     *
      * @return $this
      */
     public function setBaseUri($uri)
@@ -424,29 +434,46 @@ class Support
      */
     protected static function processingApiResult($endpoint, array $result)
     {
-        if (!isset($result['return_code']) || $result['return_code'] != 'SUCCESS') {
+
+        if (!isset($result['rspData']['rspCode']) || $result['rspData']['rspCode'] != 'SUC0000') {
             throw new GatewayException(
-                'Get Cmb API Error:'.($result['return_msg'] ?? $result['retmsg'] ?? ''),
+                'Get Cmb API Error:'.($result['rspData']['rspMsg'] ?? $result['rspData']['rspMsg'] ?? ''),
                 $result
             );
         }
 
-        if (isset($result['result_code']) && $result['result_code'] != 'SUCCESS') {
-            throw new BusinessException(
-                'Cmb Business Error: '.$result['err_code'].' - '.$result['err_code_des'],
-                $result
-            );
-        }
-
-        if ($endpoint === 'pay/getsignkey' ||
-            strpos($endpoint, 'mmpaymkttransfers') !== false ||
-            self::generateSign($result) === $result['sign']) {
+        if (self::verify($result['rspData'], $result['sign'], self::getInstance()->getConfig('pubKey'))) {
             return new Collection($result);
         }
 
         Events::dispatch(Events::SIGN_FAILED, new Events\SignFailed('Cmb', '', $result));
 
         throw new InvalidSignException('Cmb Sign Verify FAILED', $result);
+    }
+
+    /**
+     * @param $data    array  待验证签名字符串
+     * @param $sig_dat string 签名结果(strSign) 
+     * @param $pub_key string 公钥
+     * @return bool
+     */
+    public static function verify($data, $sig_dat, $pub_key)
+    {
+        //待验证签名字符串
+        $toSign_str = self::getSignContent($data);
+        
+        //处理证书
+        $pem = chunk_split($pub_key, 64, "\n");
+        $pem = "-----BEGIN PUBLIC KEY-----\n" . $pem . "-----END PUBLIC KEY-----\n";
+        $pkid = openssl_pkey_get_public($pem);
+        if (empty($pkid)) {
+            return false;
+        }
+        
+        //验证
+        $ok = openssl_verify($toSign_str, base64_decode($sig_dat), $pkid, OPENSSL_ALGO_SHA1);
+        
+        return $ok===1;
     }
 
     /**
