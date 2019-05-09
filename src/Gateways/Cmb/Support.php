@@ -203,9 +203,10 @@ class Support
      *
      * @return array
      */
-    public static function filterPayload($payload, $params, $preserve_notify_url = false): array
+    public static function filterPayload($payload, $params=[], $preserve_notify_url = false): array
     {
         $payload['sign'] = self::generateSign($payload['reqData']);
+        //$payload['sign'] = self::sign2($payload['reqData']);
 
         return $payload;
     }
@@ -215,13 +216,13 @@ class Support
      *
      * @author bandit <banditsmile@qq.com>
      *
-     * @param array $data
+     * @param array $reqData
      *
      * @throws InvalidArgumentException
      *
      * @return string
      */
-    public static function generateSign($data): string
+    public static function generateSign($reqData): string
     {
         $key = self::$instance->key;
 
@@ -229,14 +230,15 @@ class Support
             throw new InvalidArgumentException('Missing Cmb Config -- [key]');
         }
 
+        $strToSing = self::getSignContent($reqData);
         $string = hash(
             'sha256',
-            self::getSignContent($data).'&key='.$key
+            $strToSing.'&'.$key
         );
 
-        Log::debug('Cmb Generate Sign Before UPPER', [$data, $string]);
+        Log::debug('Cmb Generate Sign Before UPPER', [$reqData, $string]);
 
-        return bin2hex($string);
+        return $string;
     }
 
     /**
@@ -490,18 +492,6 @@ class Support
      */
     private static function setDevKey()
     {
-        if (self::$instance->mode == Cmb::MODE_DEV) {
-            $data = [
-                'mch_id'    => self::$instance->mch_id,
-                'nonce_str' => Str::random(),
-            ];
-            $data['sign'] = self::generateSign($data);
-
-            $result = self::requestApi('pay/getsignkey', $data);
-
-            self::$instance->config->set('key', $result['sandbox_signkey']);
-        }
-
         return self::$instance;
     }
 
@@ -520,5 +510,15 @@ class Support
         }
 
         return $this;
+    }
+
+    public function post(string $endPoint,array $data)
+    {
+        $options = [
+            'form_params' => ['jsonRequestData'=>json_encode($data)],
+            'verify'  => false,
+            'headers' => [],
+        ];
+        return $this->request('post', $endPoint, $options);
     }
 }

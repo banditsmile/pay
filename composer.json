@@ -1,7 +1,7 @@
 {
     "name": "bandit/pay",
     "description": "专注 Alipay 和 WeChat 的支付扩展包",
-    "keywords": ["alipay", "wechat", "pay"],
+    "keywords": ["alipay", "wechat", "Jdpay", "Cmb", "招行一网通"],
     "type": "library",
     "support": {
         "issues": "https://github.com/banditsmile/pay/issues",
@@ -28,12 +28,12 @@
     },
     "autoload": {
         "psr-4": {
-            "bandit\\Pay\\": "src"
+            "Bandit\\Pay\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "bandit\\Pay\\Tests\\": "tests"
+            "Bandit\\Pay\\Tests\\": "tests"
         }
     },
     "license": "MIT"
