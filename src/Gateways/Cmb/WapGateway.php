@@ -28,8 +28,6 @@ class WapGateway extends Gateway
      */
     public function pay($endpoint, array $payload): RedirectResponse
     {
-        //$payload['trade_type'] = $this->getTradeType();
-
         Events::dispatch(
             Events::PAY_STARTED,
             new Events\PayStarted('Cmb', 'Wap', $endpoint, $payload)
@@ -37,7 +35,7 @@ class WapGateway extends Gateway
 
         //支付下单接口跟其他不一样
         $env = Support::getInstance()->env;
-        $mode = Cmb::MODE_NET_PAY;
+        $mode = $this->getTradeType();
         Support::getInstance()->setBaseUri(Cmb::URL[$env][$mode]);
 
         $mweb_url = $this->preOrder($payload)->get('returnUrl');
@@ -57,6 +55,6 @@ class WapGateway extends Gateway
      */
     protected function getTradeType(): string
     {
-        return 'MWEB';
+        return Cmb::MODE_NET_PAY;
     }
 }

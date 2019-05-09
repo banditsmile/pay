@@ -31,26 +31,18 @@ class AppGateway extends Gateway
      */
     public function pay($endpoint, array $payload): Response
     {
-        $payload['appid'] = Support::getInstance()->appid;
-        $payload['trade_type'] = $this->getTradeType();
+        //支付下单接口跟其他不一样
+        $env = Support::getInstance()->env;
+        $mode = $this->getTradeType();
+        Support::getInstance()->setBaseUri(Cmb::URL[$env][$mode]);
+        $payload['sign'] = Support::generateSign($payload['reqData']);
 
-        if ($this->mode === Cmb::MODE_SERVICE) {
-            $payload['sub_appid'] = Support::getInstance()->sub_appid;
-        }
+        Events::dispatch(
+            Events::PAY_STARTED,
+            new Events\PayStarted('Cmb', 'App', $endpoint, $payload)
+        );
 
-        $pay_request = [
-            'appid'     => $this->mode === Cmb::MODE_SERVICE ? $payload['sub_appid'] : $payload['appid'],
-            'partnerid' => $this->mode === Cmb::MODE_SERVICE ? $payload['sub_mch_id'] : $payload['mch_id'],
-            'prepayid'  => $this->preOrder($payload)->get('prepay_id'),
-            'timestamp' => strval(time()),
-            'noncestr'  => Str::random(),
-            'package'   => 'Sign=WXPay',
-        ];
-        $pay_request['sign'] = Support::generateSign($pay_request);
-
-        Events::dispatch(Events::PAY_STARTED, new Events\PayStarted('Cmb', 'App', $endpoint, $pay_request));
-
-        return JsonResponse::create($pay_request);
+        return JsonResponse::create($payload);
     }
 
     /**
