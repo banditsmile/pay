@@ -66,7 +66,6 @@ abstract class Gateway implements GatewayInterface
      */
     protected function preOrder($payload): Collection
     {
-        $payload['sign'] = Support::generateSign($payload['reqData']);
 
         Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Cmb', 'PreOrder', '', $payload));
 

@@ -31,11 +31,7 @@ class AppGateway extends Gateway
      */
     public function pay($endpoint, array $payload): Response
     {
-        //支付下单接口跟其他不一样
-        $env = Support::getInstance()->env;
-        $mode = $this->getTradeType();
-        Support::getInstance()->setBaseUri(Cmb::URL[$env][$mode]);
-        $payload['sign'] = Support::generateSign($payload['reqData']);
+        $endpoint = 'netpayment/BaseHttp.dll?MB_APPPay';
 
         Events::dispatch(
             Events::PAY_STARTED,

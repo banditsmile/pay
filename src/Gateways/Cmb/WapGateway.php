@@ -28,15 +28,11 @@ class WapGateway extends Gateway
      */
     public function pay($endpoint, array $payload): RedirectResponse
     {
+        $endpoint = 'netpayment/BaseHttp.dll?MB_EUserPay';
         Events::dispatch(
             Events::PAY_STARTED,
             new Events\PayStarted('Cmb', 'Wap', $endpoint, $payload)
         );
-
-        //支付下单接口跟其他不一样
-        $env = Support::getInstance()->env;
-        $mode = $this->getTradeType();
-        Support::getInstance()->setBaseUri(Cmb::URL[$env][$mode]);
 
         $mweb_url = $this->preOrder($payload)->get('returnUrl');
 

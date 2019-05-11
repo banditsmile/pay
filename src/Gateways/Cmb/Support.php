@@ -175,19 +175,17 @@ class Support
         $result = self::$instance->post(
             $endpoint,
             $data,
-            $cert ? [
-                'cert'    => self::$instance->cert_client,
-                'ssl_key' => self::$instance->cert_key,
-            ] : []
+            []
         );
         $result = is_array($result) ? $result : json_decode($result, true);
 
+        $uri = self::$instance->getBaseUri().$endpoint;
         Events::dispatch(
             Events::API_REQUESTED,
-            new Events\ApiRequested('Cmb', '', self::$instance->getBaseUri().$endpoint, $result)
+            new Events\ApiRequested('Cmb', '', $uri, (array)$result)
         );
 
-        return self::processingApiResult($endpoint, $result);
+        return self::processingApiResult($endpoint, (array)$result);
     }
 
     /**
@@ -442,6 +440,10 @@ class Support
                 'Get Cmb API Error:'.($result['rspData']['rspMsg'] ?? $result['rspData']['rspMsg'] ?? ''),
                 $result
             );
+        }
+
+        if(!isset($result['sign'])){
+            return new Collection($result);
         }
 
         if (self::verify($result['rspData'], $result['sign'], self::getInstance()->getConfig('pubKey'))) {

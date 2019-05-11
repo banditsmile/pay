@@ -27,12 +27,14 @@ class ScanGateway extends Gateway
      */
     public function pay($endpoint, array $payload): Collection
     {
-        $payload['spbill_create_ip'] = Request::createFromGlobals()->server->get('SERVER_ADDR');
-        $payload['trade_type'] = $this->getTradeType();
+        $endpoint = 'netpayment/BaseHttp.dll?MB_APPPay';
 
-        Events::dispatch(Events::PAY_STARTED, new Events\PayStarted('Cmb', 'Scan', $endpoint, $payload));
+        Events::dispatch(
+            Events::PAY_STARTED,
+            new Events\PayStarted('Cmb', 'Scan', $endpoint, $payload)
+        );
 
-        return $this->preOrder($payload);
+        return Support::requestApi($endpoint, $payload);
     }
 
     /**

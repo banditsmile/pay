@@ -69,9 +69,9 @@ class Cmb implements GatewayApplicationInterface
             self::MODE_B2B         => 'http://121.15.180.66:801/',
         ],
         self::ENV_DEV=>[
-            self::MODE_NET_PAY     => 'https://netpay.cmbchina.com/',
-            self::MODE_MOBILE      => 'https://netpay.cmbchina.com/',
-            self::MODE_NORMAL      => 'https://payment.ebank.cmbchina.com/',
+            self::MODE_NET_PAY     => 'http://121.15.180.66:801/',
+            self::MODE_MOBILE      => 'http://121.15.180.66:801/',
+            self::MODE_NORMAL      => 'http://121.15.180.66:801/',
             self::MODE_B2B         => 'http://121.15.180.72/',
         ]
     ];
@@ -109,7 +109,12 @@ class Cmb implements GatewayApplicationInterface
             'version'   => $config->get('version', ''),
             'charset'   => $config->get('charset', ''),
             'signType'  => $config->get('signType', ''),
-            'reqData'   => []
+            'sign'      => '',
+            'reqData'   => [
+                'dateTime'  =>date("YmdHis"),
+                'branchNo'  =>$config->get('branchNo'),
+                'merchantNo'=>$config->get('merchantNo'),
+            ]
         ];
         $this->env = $config->get('env');
     }
@@ -152,6 +157,13 @@ class Cmb implements GatewayApplicationInterface
 
         $this->payload['reqData'] = array_merge($this->payload['reqData'], $params);
 
+        $this->payload = Support::filterPayload($this->payload);
+
+        $env = Support::getInstance()->env;
+        $mode = self::MODE_NET_PAY;
+        Support::getInstance()->setBaseUri(Cmb::URL[$env][$mode]);
+
+
         $gateway = get_class($this).'\\'.Str::studly($gateway).'Gateway';
 
         if (class_exists($gateway)) {
@@ -159,6 +171,44 @@ class Cmb implements GatewayApplicationInterface
         }
 
         throw new InvalidGatewayException("Pay Gateway [{$gateway}] Not Exists");
+    }
+
+    /**
+     * 查询招行公钥
+     *
+     * @return array|string
+     * @throws \Bandit\Pay\Exceptions\GatewayException
+     */
+    public function pubkey()
+    {
+        $param = ['txCode'=>'FBPK'];
+        $this->payload['reqData'] = array_merge($this->payload['reqData'], $param);
+
+        $this->payload = Support::filterPayload($this->payload);
+
+        Events::dispatch(
+            Events::METHOD_CALLED,
+            new Events\MethodCalled('Cmb', 'pubkey', $this->gateway, $this->payload)
+        );
+        $env = Support::getInstance()->env;
+        $mode = self::MODE_B2B;
+        Support::getInstance()->setBaseUri(Cmb::URL[$env][$mode]);
+
+        $result = Support::getInstance()->post(
+            'CmbBank_B2B/UI/NetPay/DoBusiness.ashx',
+            $this->payload
+        );
+
+        $result = json_decode($result, true);
+        if (!is_array($result)) {
+            throw new GatewayException('Get Cmb API Error: ', $result);
+        }
+        if (!isset($result['rspData']['rspCode'])
+            || $result['rspData']['rspCode']!=='SUC0000'
+        ) {
+            throw new GatewayException('Get Cmb API Error: ', $result);
+        }
+        return $result;
     }
 
     /**
@@ -208,7 +258,7 @@ class Cmb implements GatewayApplicationInterface
      *
      * @author bandit <banditsmile@qq.com>
      *
-     * @param string|array $order
+     * @param string|array $param
      * @param bool         $refund
      *
      * @throws GatewayException
@@ -217,14 +267,16 @@ class Cmb implements GatewayApplicationInterface
      *
      * @return Collection
      */
-    public function find($order, $refund = false): Collection
+    public function find($param, $refund = false): Collection
     {
-        if ($refund) {
-            unset($this->payload['spbill_create_ip']);
+        $endpoint = 'NetPayment/BaseHttp.dll?QuerySingleOrder';
+        if ($this->env == self::ENV_DEV) {
+            $endpoint = str_replace('NetPayment/',  'NetPayment_dl/',  $endpoint);
         }
+        $this->payload['reqData'] = array_merge($this->payload['reqData'], $param);
 
-        $this->payload['reqData']
-            = Support::filterPayload($this->payload['reqData'], $order);
+        $this->payload = Support::filterPayload($this->payload);
+
 
         Events::dispatch(
             Events::METHOD_CALLED,
@@ -232,7 +284,77 @@ class Cmb implements GatewayApplicationInterface
         );
 
         return Support::requestApi(
-            $refund ? 'Netpayment/BaseHttp.dll?QueryRefundByDate':'Netpayment/BaseHttp.dll?QuerySingleOrder' ,
+            $endpoint,
+            $this->payload
+        );
+    }
+
+
+    /**
+     * Query an order.
+     *
+     * @author bandit <banditsmile@qq.com>
+     *
+     * @param string|array $param
+     *
+     * @throws GatewayException
+     * @throws InvalidSignException
+     * @throws InvalidArgumentException
+     *
+     * @return Collection
+     */
+    public function accountList($param): Collection
+    {
+        $endpoint = 'NetPayment/BaseHttp.dll?QueryAccountList';
+        if ($this->env == self::ENV_DEV) {
+            $endpoint = str_replace('NetPayment/',  'NetPayment_dl/',  $endpoint);
+        }
+        $this->payload['reqData'] = array_merge($this->payload['reqData'], $param);
+
+        $this->payload = Support::filterPayload($this->payload);
+
+        Events::dispatch(
+            Events::METHOD_CALLED,
+            new Events\MethodCalled('Cmb', 'Find', $this->gateway, $this->payload)
+        );
+
+        return Support::requestApi(
+            $endpoint,
+            $this->payload
+        );
+    }
+
+
+    /**
+     * Query an order.
+     *
+     * @author bandit <banditsmile@qq.com>
+     *
+     * @param string|array $param
+     *
+     * @throws GatewayException
+     * @throws InvalidSignException
+     * @throws InvalidArgumentException
+     *
+     * @return Collection
+     */
+    public function accountByDate($param): Collection
+    {
+        $endpoint = 'NetPayment/BaseHttp.dll?QuerySettledOrderByMerchantDate';
+        if ($this->env == self::ENV_DEV) {
+            $endpoint = str_replace('NetPayment/',  'NetPayment_dl/',  $endpoint);
+        }
+        $this->payload['reqData'] = array_merge($this->payload['reqData'], $param);
+
+        $this->payload = Support::filterPayload($this->payload);
+
+        Events::dispatch(
+            Events::METHOD_CALLED,
+            new Events\MethodCalled('Cmb', 'Find', $this->gateway, $this->payload)
+        );
+
+        return Support::requestApi(
+            $endpoint,
             $this->payload
         );
     }
@@ -242,7 +364,7 @@ class Cmb implements GatewayApplicationInterface
      *
      * @author bandit <banditsmile@qq.com>
      *
-     * @param array $order
+     * @param array $param
      *
      * @throws GatewayException
      * @throws InvalidSignException
@@ -250,9 +372,15 @@ class Cmb implements GatewayApplicationInterface
      *
      * @return Collection
      */
-    public function refund($order): Collection
+    public function refund($param): Collection
     {
-        $this->payload = Support::filterPayload($this->payload, $order, true);
+        $endpoint = 'NetPayment/BaseHttp.dll?DoRefund';
+        if ($this->env == self::ENV_DEV) {
+            $endpoint = str_replace('NetPayment/',  'NetPayment_dl/',  $endpoint);
+        }
+        $this->payload['reqData'] = array_merge($this->payload['reqData'], $param);
+
+        $this->payload = Support::filterPayload($this->payload);
 
         Events::dispatch(
             Events::METHOD_CALLED,
@@ -260,18 +388,19 @@ class Cmb implements GatewayApplicationInterface
         );
 
         return Support::requestApi(
-            'NetPayment/BaseHttp.dll?DoRefund',
+            $endpoint,
             $this->payload,
             true
         );
     }
 
     /**
+     * @deprecated 招行未提供该接口
      * Cancel an order.
      *
      * @author bandit <banditsmile@qq.com>
      *
-     * @param array $order
+     * @param array $param
      *
      * @throws GatewayException
      * @throws InvalidSignException
@@ -279,9 +408,15 @@ class Cmb implements GatewayApplicationInterface
      *
      * @return Collection
      */
-    public function cancel($order): Collection
+    public function cancel($param): Collection
     {
-        $this->payload = Support::filterPayload($this->payload, $order, true);
+        $endpoint = 'NetPayment/BaseHttp.dll?DoRefund';
+        if ($this->env == self::ENV_DEV) {
+            $endpoint = str_replace('NetPayment/',  'NetPayment_dl/',  $endpoint);
+        }
+        $this->payload['reqData'] = array_merge($this->payload['reqData'], $param);
+
+        $this->payload = Support::filterPayload($this->payload);
 
         Events::dispatch(
             Events::METHOD_CALLED,
@@ -289,13 +424,15 @@ class Cmb implements GatewayApplicationInterface
         );
 
         return Support::requestApi(
-            'secapi/pay/reverse',
+            $endpoint,
             $this->payload,
             true
         );
     }
 
     /**
+     * @deprecated 招行未提供该接口
+     *
      * Close an order.
      *
      * @author bandit <banditsmile@qq.com>
@@ -339,9 +476,9 @@ class Cmb implements GatewayApplicationInterface
         );
 
         return Response::create(
-            Support::toXml(['return_code' => 'SUCCESS', 'return_msg' => 'OK']),
+            [],
             200,
-            ['Content-Type' => 'application/xml']
+            []
         );
     }
 
@@ -380,56 +517,7 @@ class Cmb implements GatewayApplicationInterface
         return $result;
     }
 
-    /**
-     * 查询招行公钥
-     *
-     * @return array|string
-     * @throws \Bandit\Pay\Exceptions\GatewayException
-     */
-    public function pubkey()
-    {
-        $support = Support::getInstance();
-        $reqData = [
-            'dateTime'  =>date("YmdHis"),
-            'txCode'    =>'FBPK',
-            'branchNo'  =>$support->getConfig('branchNo'),
-            'merchantNo'=>$support->getConfig('merchantNo'),
-        ];
-        $this->payload['reqData'] = $reqData;
 
-        $this->payload = Support::filterPayload($this->payload);
-
-        Events::dispatch(
-            Events::METHOD_CALLED,
-            new Events\MethodCalled('Cmb', 'pubkey', $this->gateway, $this->payload)
-        );
-        $env = Support::getInstance()->env;
-        $mode = self::MODE_B2B;
-        Support::getInstance()->setBaseUri(Cmb::URL[$env][$mode]);
-
-        $result = Support::getInstance()->post(
-            'CmbBank_B2B/UI/NetPay/DoBusiness.ashx',
-            $this->payload,
-            $options = [
-                'form_params' => ['jsonRequestData'=>json_encode($this->payload)],
-                'verify'  => false,
-                'headers' => [],
-            ]
-        );
-
-        $result = json_decode($result, true);
-        if (!is_array($result)) {
-            throw new GatewayException('Get Cmb API Error: ', $result);
-        }
-        if (!isset($result['rspData']['rspCode'])
-            || $result['rspData']['rspCode']!=='SUC0000'
-        ) {
-            throw new GatewayException('Get Cmb API Error: ', $result);
-        }
-
-        return $result;
-
-    }
 
     /**
      * Make pay gateway.
