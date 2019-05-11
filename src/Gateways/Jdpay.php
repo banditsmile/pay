@@ -33,14 +33,19 @@ use Yansongda\Supports\Str;
 class Jdpay implements GatewayApplicationInterface
 {
     /**
-     * 普通模式.
+     * 生产模式.
      */
-    const MODE_NORMAL = 'normal';
+    const ENV_PRO = 'pro';
 
     /**
      * 沙箱模式.
      */
-    const MODE_DEV = 'dev';
+    const ENV_TEST = 'pro';
+
+    /**
+     * 普通模式.
+     */
+    const MODE_NORMAL = 'normal';
 
     /**
      * h5支付
@@ -58,7 +63,6 @@ class Jdpay implements GatewayApplicationInterface
      */
     const URL = [
         self::MODE_NORMAL  => 'https://paygate.jd.com/',
-        self::MODE_DEV     => 'https://paygate.jd.com/sandboxnew/',
         self::MODE_H5     => 'https://h5pay.jd.com/',
         self::MODE_PC     => 'https://wepay.jd.com/',
     ];
@@ -99,13 +103,6 @@ class Jdpay implements GatewayApplicationInterface
             'trade_type'         => '',
             'ip'                 => Request::createFromGlobals()->getClientIp(),
         ];
-
-        if ($config->get('mode', self::MODE_NORMAL) === static::MODE_SERVICE) {
-            $this->payload = array_merge($this->payload, [
-                'sub_mch_id' => $config->get('sub_mch_id'),
-                'sub_appid'  => $config->get('sub_app_id', ''),
-            ]);
-        }
     }
 
     /**
@@ -139,9 +136,19 @@ class Jdpay implements GatewayApplicationInterface
      */
     public function pay($gateway, $params = [])
     {
-        Events::dispatch(Events::PAY_STARTING, new Events\PayStarting('Jdpay', $gateway, $params));
+        Events::dispatch(
+            Events::PAY_STARTING,
+            new Events\PayStarting('Jdpay', $gateway, $params)
+        );
 
         $this->payload = array_merge($this->payload, $params);
+
+        $this->payload = Support::filterPayload($this->payload);
+
+        $mode = self::MODE_NORMAL;
+        Support::getInstance()->setBaseUri(Jdpay::URL[$mode]);
+
+
 
         $gateway = get_class($this).'\\'.Str::studly($gateway).'Gateway';
 

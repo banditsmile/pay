@@ -4,10 +4,11 @@ namespace Bandit\Pay\Gateways\Jdpay;
 
 use Bandit\Pay\Contracts\GatewayInterface;
 use Bandit\Pay\Events;
+use Bandit\Pay\Gateways\Jdpay;
 use Bandit\Pay\Exceptions\GatewayException;
 use Bandit\Pay\Exceptions\InvalidArgumentException;
 use Bandit\Pay\Exceptions\InvalidSignException;
-use Bandit\Supports\Collection;
+use Yansongda\Supports\Collection;
 
 abstract class Gateway implements GatewayInterface
 {
@@ -66,10 +67,28 @@ abstract class Gateway implements GatewayInterface
      */
     protected function preOrder($payload): Collection
     {
-        $payload['sign'] = Support::generateSign($payload);
+        $endpoint = 'service/uniorder';
 
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Jdpay', 'PreOrder', '', $payload));
+        Events::dispatch(
+            Events::METHOD_CALLED,
+            new Events\MethodCalled('Jdpay', 'PreOrder', '', $payload)
+        );
 
-        return Support::requestApi('service/uniorder', $payload);
+        $endpoint = $this->endpointByEnv($endpoint);
+        return Support::requestApi($endpoint, $payload);
+    }
+
+    /**
+     *
+     * @param $endpoint string ½Ó¿ÚµØÖ·
+     *
+     * @return string
+     */
+    protected function endpointByEnv($endpoint)
+    {
+        if (Support::getInstance()->getConfig('env')==Jdpay::ENV_TEST) {
+            return $endpoint;
+        }
+        return $endpoint;
     }
 }

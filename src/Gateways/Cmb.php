@@ -34,7 +34,7 @@ class Cmb implements GatewayApplicationInterface
     /**
      * 沙箱模式.
      */
-    const ENV_DEV = 'dev';
+    const ENV_TEST = 'test';
 
     /**
      * 生成模式.
@@ -68,7 +68,7 @@ class Cmb implements GatewayApplicationInterface
             self::MODE_NORMAL      => 'https://payment.ebank.cmbchina.com/',
             self::MODE_B2B         => 'http://121.15.180.66:801/',
         ],
-        self::ENV_DEV=>[
+        self::ENV_TEST=>[
             self::MODE_NET_PAY     => 'http://121.15.180.66:801/',
             self::MODE_MOBILE      => 'http://121.15.180.66:801/',
             self::MODE_NORMAL      => 'http://121.15.180.66:801/',
@@ -270,7 +270,7 @@ class Cmb implements GatewayApplicationInterface
     public function find($param, $refund = false): Collection
     {
         $endpoint = 'NetPayment/BaseHttp.dll?QuerySingleOrder';
-        if ($this->env == self::ENV_DEV) {
+        if ($this->env == self::ENV_TEST) {
             $endpoint = str_replace('NetPayment/',  'NetPayment_dl/',  $endpoint);
         }
         $this->payload['reqData'] = array_merge($this->payload['reqData'], $param);
@@ -306,7 +306,7 @@ class Cmb implements GatewayApplicationInterface
     public function accountList($param): Collection
     {
         $endpoint = 'NetPayment/BaseHttp.dll?QueryAccountList';
-        if ($this->env == self::ENV_DEV) {
+        if ($this->env == self::ENV_TEST) {
             $endpoint = str_replace('NetPayment/',  'NetPayment_dl/',  $endpoint);
         }
         $this->payload['reqData'] = array_merge($this->payload['reqData'], $param);
@@ -341,7 +341,7 @@ class Cmb implements GatewayApplicationInterface
     public function accountByDate($param): Collection
     {
         $endpoint = 'NetPayment/BaseHttp.dll?QuerySettledOrderByMerchantDate';
-        if ($this->env == self::ENV_DEV) {
+        if ($this->env == self::ENV_TEST) {
             $endpoint = str_replace('NetPayment/',  'NetPayment_dl/',  $endpoint);
         }
         $this->payload['reqData'] = array_merge($this->payload['reqData'], $param);
@@ -375,7 +375,7 @@ class Cmb implements GatewayApplicationInterface
     public function refund($param): Collection
     {
         $endpoint = 'NetPayment/BaseHttp.dll?DoRefund';
-        if ($this->env == self::ENV_DEV) {
+        if ($this->env == self::ENV_TEST) {
             $endpoint = str_replace('NetPayment/',  'NetPayment_dl/',  $endpoint);
         }
         $this->payload['reqData'] = array_merge($this->payload['reqData'], $param);
@@ -411,7 +411,7 @@ class Cmb implements GatewayApplicationInterface
     public function cancel($param): Collection
     {
         $endpoint = 'NetPayment/BaseHttp.dll?DoRefund';
-        if ($this->env == self::ENV_DEV) {
+        if ($this->env == self::ENV_TEST) {
             $endpoint = str_replace('NetPayment/',  'NetPayment_dl/',  $endpoint);
         }
         $this->payload['reqData'] = array_merge($this->payload['reqData'], $param);

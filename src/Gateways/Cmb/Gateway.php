@@ -67,8 +67,11 @@ abstract class Gateway implements GatewayInterface
     protected function preOrder($payload): Collection
     {
 
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Cmb', 'PreOrder', '', $payload));
-
-        return Support::requestApi('netpayment/BaseHttp.dll?MB_EUserPay', $payload);
+        $endpoint = 'netpayment/BaseHttp.dll?MB_EUserPay';
+        Events::dispatch(
+            Events::METHOD_CALLED,
+            new Events\MethodCalled('Cmb', 'PreOrder', '', $payload)
+        );
+        return Support::requestApi($endpoint, $payload);
     }
 }

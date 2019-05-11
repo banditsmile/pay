@@ -124,7 +124,8 @@ class Support
     public static function getInstance()
     {
         if (is_null(self::$instance)) {
-            throw new InvalidArgumentException('You Should [Create] First Before Using');
+            $msg = 'You Should [Create] First Before Using';
+            throw new InvalidArgumentException($msg);
         }
 
         return self::$instance;
@@ -159,7 +160,11 @@ class Support
      */
     public static function requestApi($endpoint, $data, $cert = false): Collection
     {
-        Events::dispatch(Events::API_REQUESTING, new Events\ApiRequesting('Jdpay', '', self::$instance->getBaseUri().$endpoint, $data));
+        $url = self::$instance->getBaseUri().$endpoint;
+        Events::dispatch(
+            Events::API_REQUESTING,
+            new Events\ApiRequesting('Jdpay', '', $url, $data)
+        );
 
         $result = self::$instance->post(
             $endpoint,
@@ -171,7 +176,10 @@ class Support
         );
         $result = is_array($result) ? $result : self::fromXml($result);
 
-        Events::dispatch(Events::API_REQUESTED, new Events\ApiRequested('Jdpay', '', self::$instance->getBaseUri().$endpoint, $result));
+        Events::dispatch(
+            Events::API_REQUESTED,
+            new Events\ApiRequested('Jdpay', '', $url, $result)
+        );
 
         return self::processingApiResult($endpoint, $result);
     }
@@ -189,25 +197,8 @@ class Support
      *
      * @return array
      */
-    public static function filterPayload($payload, $params, $preserve_notify_url = false): array
+    public static function filterPayload($payload, $params=[], $preserve_notify_url = false): array
     {
-        $type = self::getTypeName($params['type'] ?? '');
-
-        $payload = array_merge(
-            $payload,
-            is_array($params) ? $params : ['out_trade_no' => $params]
-        );
-        $payload['appid'] = self::$instance->getConfig($type, '');
-
-        if (self::$instance->getConfig('mode', Jdpay::MODE_NORMAL) === Jdpay::MODE_SERVICE) {
-            $payload['sub_appid'] = self::$instance->getConfig('sub_'.$type, '');
-        }
-
-        unset($payload['trade_type'], $payload['type']);
-        if (!$preserve_notify_url) {
-            unset($payload['notify_url']);
-        }
-
         $payload['sign'] = self::generateSign($payload);
 
         return $payload;
@@ -255,7 +246,7 @@ class Support
         $buff = '';
 
         foreach ($data as $k => $v) {
-            $buff .= ($k != 'sign' && $v != '' && !is_array($v)) ? $k.'='.$v.'&' : '';
+            $buff .=($k != 'sign' && $v != '' && !is_array($v)) ? $k.'='.$v.'&' : '';
         }
 
         Log::debug('Jdpay Generate Sign Content Before Trim', [$data, $buff]);
@@ -296,7 +287,8 @@ class Support
     public static function toXml($data): string
     {
         if (!is_array($data) || count($data) <= 0) {
-            throw new InvalidArgumentException('Convert To Xml Error! Invalid Array!');
+            $msg = 'Convert To Xml Error! Invalid Array!';
+            throw new InvalidArgumentException($msg);
         }
 
         $xml = '<xml>';
@@ -323,7 +315,8 @@ class Support
     public static function fromXml($xml): array
     {
         if (!$xml) {
-            throw new InvalidArgumentException('Convert To Array Error! Invalid Xml!');
+            $msg ='Convert To Array Error! Invalid Xml!';
+            throw new InvalidArgumentException($msg);
         }
 
         libxml_disable_entity_loader(true);
@@ -389,6 +382,19 @@ class Support
     public function getBaseUri()
     {
         return $this->baseUri;
+    }
+
+    /**
+     * 根据具体业务调整请求域名
+     *
+     * @param $uri
+     *
+     * @return $this
+     */
+    public function setBaseUri($uri)
+    {
+        $this->baseUri = $uri;
+        return $this;
     }
 
     /**
