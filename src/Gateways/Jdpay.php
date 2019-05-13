@@ -40,7 +40,7 @@ class Jdpay implements GatewayApplicationInterface
     /**
      * 沙箱模式.
      */
-    const ENV_TEST = 'pro';
+    const ENV_TEST = 'test';
 
     /**
      * 普通模式.
@@ -96,12 +96,7 @@ class Jdpay implements GatewayApplicationInterface
         $this->payload = [
             'version'            => $config->get('version', 'V2.0'),
             'merchant'           => $config->get('merchant', ''),
-            'currency'           => $config->get('currency', 'CNY'),
-            'nonce_str'          => Str::random(),
-            'notifyUrl'          => $config->get('notifyUrl', ''),
             'sign'               => '',
-            'trade_type'         => '',
-            'ip'                 => Request::createFromGlobals()->getClientIp(),
         ];
     }
 
@@ -211,16 +206,15 @@ class Jdpay implements GatewayApplicationInterface
      */
     public function find($order, $refund = false): Collection
     {
-        if ($refund) {
-            unset($this->payload['spbill_create_ip']);
-        }
-
         $this->payload = Support::filterPayload($this->payload, $order);
 
-        Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Jdpay', 'Find', $this->gateway, $this->payload));
+        Events::dispatch(
+            Events::METHOD_CALLED,
+            new Events\MethodCalled('Jdpay', 'Find', $this->gateway, $this->payload)
+        );
 
         return Support::requestApi(
-            $refund ? 'pay/refundquery' : 'pay/orderquery',
+            'service/query',
             $this->payload
         );
     }
@@ -245,7 +239,7 @@ class Jdpay implements GatewayApplicationInterface
         Events::dispatch(Events::METHOD_CALLED, new Events\MethodCalled('Jdpay', 'Refund', $this->gateway, $this->payload));
 
         return Support::requestApi(
-            'secapi/pay/refund',
+            'service/refund',
             $this->payload,
             true
         );

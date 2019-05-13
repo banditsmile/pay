@@ -166,14 +166,29 @@ class Support
             new Events\ApiRequesting('Jdpay', '', $url, $data)
         );
 
-        $result = self::$instance->post(
-            $endpoint,
-            self::toXml($data),
-            $cert ? [
+        $req = self::toXml($data);
+        var_dump($req);
+        $options = ['Content-Type'=>'application/xml;charset=utf-8'];
+        if ($cert) {
+            $options = array_merge(
+                $options, [
                 'cert'    => self::$instance->cert_client,
-                'ssl_key' => self::$instance->cert_key,
-            ] : []
+                'ssl_key' => self::$instance->cert_key,]
+            );
+        }
+       /* $result = self::$instance->post(
+            $endpoint,
+            $req,
+            $options
         );
+        echo __LINE__,PHP_EOL;
+        echo ($result),PHP_EOL;*/
+
+        $result = HttpUtils::http_post_data($url, $req);
+        var_dump($result);
+
+        return $result;
+
         $result = is_array($result) ? $result : self::fromXml($result);
 
         Events::dispatch(
@@ -199,6 +214,11 @@ class Support
      */
     public static function filterPayload($payload, $params=[], $preserve_notify_url = false): array
     {
+        $payload = array_merge(
+            $payload,
+            is_array($params) ? $params : ['tradeNum' => $params]
+        );
+
         $payload['sign'] = self::generateSign($payload);
 
         return $payload;
@@ -217,41 +237,11 @@ class Support
      */
     public static function generateSign($data): string
     {
-        $key = self::$instance->key;
-
-        if (is_null($key)) {
-            throw new InvalidArgumentException('Missing Jdpay Config -- [key]');
-        }
-
-        ksort($data);
-
-        $string = md5(self::getSignContent($data).'&key='.$key);
+        $string = SignUtil::sign($data, ['sign']);
 
         Log::debug('Jdpay Generate Sign Before UPPER', [$data, $string]);
 
-        return strtoupper($string);
-    }
-
-    /**
-     * Generate sign content.
-     *
-     * @author bandit <banditsmile@qq.com>
-     *
-     * @param array $data
-     *
-     * @return string
-     */
-    public static function getSignContent($data): string
-    {
-        $buff = '';
-
-        foreach ($data as $k => $v) {
-            $buff .=($k != 'sign' && $v != '' && !is_array($v)) ? $k.'='.$v.'&' : '';
-        }
-
-        Log::debug('Jdpay Generate Sign Content Before Trim', [$data, $buff]);
-
-        return trim($buff, '&');
+        return $string;
     }
 
     /**
@@ -291,12 +281,12 @@ class Support
             throw new InvalidArgumentException($msg);
         }
 
-        $xml = '<xml>';
+        $xml = '<?xml version="1.0" encoding="UTF-8"?><jdpay>';
         foreach ($data as $key => $val) {
             $xml .= is_numeric($val) ? '<'.$key.'>'.$val.'</'.$key.'>' :
                                        '<'.$key.'><![CDATA['.$val.']]></'.$key.'>';
         }
-        $xml .= '</xml>';
+        $xml .= '</jdpay>';
 
         return $xml;
     }
@@ -413,9 +403,9 @@ class Support
      */
     protected static function processingApiResult($endpoint, array $result)
     {
-        if (!isset($result['return_code']) || $result['return_code'] != 'SUCCESS') {
+        if (!isset($result['result']['code']) || $result['result']['code'] != '000000') {
             throw new GatewayException(
-                'Get Jdpay API Error:'.($result['return_msg'] ?? $result['retmsg'] ?? ''),
+                'Get Jdpay API Error:'.($result['result']['desc'] ??  ''),
                 $result
             );
         }
@@ -452,7 +442,7 @@ class Support
      */
     private static function setDevKey()
     {
-        if (self::$instance->mode == Jdpay::MODE_DEV) {
+        if (self::$instance->mode == Jdpay::ENV_TEST) {
             $data = [
                 'mch_id'    => self::$instance->mch_id,
                 'nonce_str' => Str::random(),
